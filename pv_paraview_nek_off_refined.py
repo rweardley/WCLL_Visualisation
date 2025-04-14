@@ -37,7 +37,7 @@ print(f"Checkpoint: 6, time={time.time()-t_init:.2f} s")
 
 
 # Save output as .vti (VTK ImageData format)
-SaveData(output_file, proxy=resample, FileType='VTK XML Image Data', Writetimestepsasfileseries=1, Filenamesuffix='_%.3d')
+SaveData(output_file, proxy=resample, Writetimestepsasfileseries=1, Filenamesuffix='_%.3d')
 
 print(f"Checkpoint: 7, time={time.time()-t_init:.2f} s")
 
