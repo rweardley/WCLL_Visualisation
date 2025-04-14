@@ -2,8 +2,8 @@
 #SBATCH -A do015
 #SBATCH -p dine2
 #SBATCH --nodes=4
-#SBATCH --ntasks-per-node=4
-#SBATCH --cpus-per-task=16
+#SBATCH --ntasks-per-node=16
+#SBATCH --cpus-per-task=4
 #SBATCH -t 03:00:00
 #SBATCH -J nek_off
 #SBATCH --exclusive
@@ -14,4 +14,4 @@ module list
 
 PARAVIEW_PATH="../../ParaView-5.13.3-MPI-Linux-Python3.10-x86_64/"
 
-mpiexec -np $SLURM_NTASKS -print-rank-map $PARAVIEW_PATH"/bin/pvbatch" test.py
+mpiexec -np $SLURM_NTASKS -print-rank-map $PARAVIEW_PATH"/bin/pvbatch" nek_off_refined.py
