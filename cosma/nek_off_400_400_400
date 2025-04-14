@@ -14,4 +14,4 @@ module list
 
 PARAVIEW_PATH="../../ParaView-5.13.3-MPI-Linux-Python3.10-x86_64/"
 
-mpiexec -np $SLURM_NTASKS -print-rank-map $PARAVIEW_PATH"/bin/pvbatch" nek_off_refined.py
+mpiexec -np $SLURM_NTASKS -print-rank-map $PARAVIEW_PATH"/bin/pvbatch" nek_off_400_400_400.py
