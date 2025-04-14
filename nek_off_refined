@@ -22,4 +22,4 @@ PV_MPI_TASKS=1792
 
 PARAVIEW_PATH="/home/ir-eard1/rds/rds-ukaea-ap001/ir-eard1/paraview/ParaView-5.13.3-MPI-Linux-Python3.10-x86_64"
 
-mpiexec -n $PV_MPI_TASKS -print-rank-map ${PARAVIEW_PATH}"/bin/pvbatch" pv_paraview_nek_off_refined.py
+mpiexec -n $PV_MPI_TASKS -print-rank-map ${PARAVIEW_PATH}"/bin/pvbatch" nek_off_refined.py
