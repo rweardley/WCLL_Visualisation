@@ -2,16 +2,14 @@
 #SBATCH -A UKAEA-AP002-CPU
 #SBATCH -p ukaea-spr-hbm
 #SBATCH --nodes=7
-#SBATCH --ntasks-per-node=112
+#SBATCH --ntasks-per-node=4
+#SBATCH --cpus-per-task=28
 #SBATCH -t 03:00:00
 #SBATCH -J nek_off
 #SBATCH --exclusive
 
 module load lua
 
-PV_MPI_TASKS=196
-PV_MPI_TASKS_PER_NODE=28
+PARAVIEW_PATH="/home/ir-eard1/rds/rds-ukaea-ap001/ir-eard1/paraview/ParaView-5.13.3-MPI-Linux-Python3.10-x86_64"
 
-srun --ntasks=$PV_MPI_TASKS --ntasks-per-node=$PV_MPI_TASKS_PER_NODE bash -c \
-'echo "Rank $SLURM_PROCID on $(hostname)"; \
- "/home/ir-eard1/rds/rds-ukaea-ap001/ir-eard1/paraview/ParaView-5.13.3-MPI-Linux-Python3.10-x86_64/bin/pvbatch" nek_off_refined_flat.py'
+mpiexec -np $SLURM_NTASKS -print-rank-map $PARAVIEW_PATH"/bin/pvbatch" nek_off_refined.py
