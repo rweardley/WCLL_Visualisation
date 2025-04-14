@@ -4,9 +4,8 @@
 #SBATCH --nodes=14
 #SBATCH --ntasks-per-node=112
 #SBATCH -t 03:00:00
-#SBATCH -J pv_frontier_off_refined_numactl
+#SBATCH -J nek_off_flat
 #SBATCH --exclusive
-##SBATCH --mem=1T
 
 module load lua
 
