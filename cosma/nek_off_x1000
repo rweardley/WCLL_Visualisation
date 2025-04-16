@@ -1,0 +1,17 @@
+#!/bin/bash
+#SBATCH -A do015
+#SBATCH -p dine2
+#SBATCH --nodes=6
+#SBATCH --ntasks-per-node=16
+#SBATCH --cpus-per-task=4
+#SBATCH -t 04:00:00
+#SBATCH -J nek_off_x1000
+#SBATCH --exclusive
+
+module load intel_comp/2025.0.1
+module load compiler-rt tbb umf compiler mpi
+module list
+
+PARAVIEW_PATH="../../ParaView-5.13.3-MPI-Linux-Python3.10-x86_64/"
+
+mpiexec -np $SLURM_NTASKS -print-rank-map $PARAVIEW_PATH"/bin/pvbatch" nek_off_x1000.py
