@@ -1,9 +1,10 @@
 #!/bin/bash
 #SBATCH -A FUS166
-#SBATCH -p batch
-#SBATCH --nodes=10
-#SBATCH --ntasks-per-node=32
-#SBATCH --cpus-per-task=1
+##SBATCH -p batch
+#SBATCH -p gpu
+#SBATCH --nodes=4
+#SBATCH --ntasks-per-node=4
+#SBATCH --cpus-per-task=7
 #SBATCH -t 01:00:00
 #SBATCH -J resample_test
 #SBATCH --exclusive
