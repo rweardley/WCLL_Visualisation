@@ -15,4 +15,4 @@ module load paraview/5.13.3-osmesa  # andes
 # module load ums ums032 dav-sdk      # frontier
 # module load paraview/5.13.3-mpi     # frontier
 
-srun -n $SLURM_NTASKS pvbatch pvtest.py
+srun -n $SLURM_NTASKS pvbatch resample_test_x400.py
