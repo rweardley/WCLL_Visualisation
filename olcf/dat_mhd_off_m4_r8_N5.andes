@@ -13,6 +13,8 @@ date
 
 SLURM_CPUS_PER_TASK=1
 
-module load paraview/5.13.3-osmesa  # andes
+#module load paraview/5.13.3-osmesa  # andes
+PARAVIEW_PATH="../../ParaView-5.13.3-MPI-Linux-Python3.10-x86_64/"
 
-srun -n $SLURM_NTASKS pvbatch dat_mhd_off_m4_r8_N5.py
+# srun -n $SLURM_NTASKS pvbatch dat_mhd_off_m4_r8_N5.py
+srun -n $SLURM_NTASKS $PARAVIEW_PATH"/bin/pvbatch" dat_mhd_off_m4_r8_N5.py
