@@ -1,0 +1,16 @@
+#!/bin/bash
+#SBATCH -A FUS166
+#SBATCH -p gpu
+#SBATCH --nodes=4
+#SBATCH --ntasks-per-node=4
+#SBATCH --cpus-per-task=7
+#SBATCH -t 01:00:00
+#SBATCH -J dat_mhd_off_m4_r8_N5
+#SBATCH --exclusive
+
+cd $SLURM_SUBMIT_DIR
+date
+
+module load paraview/5.13.3-osmesa  # andes
+
+srun -n $SLURM_NTASKS pvbatch dat_mhd_off_m4_r8_N5.py
