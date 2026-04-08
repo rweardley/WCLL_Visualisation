@@ -26,7 +26,7 @@ print(f"Checkpoint: 4, time={time.time()-t_init:.2f} s")
 # Apply Resample To Image filter
 resample = ResampleToImage(Input=nek5000_data)
 resample.UseInputBounds = 1
-resample.SamplingDimensions = [3614, 1000, 1861]
+resample.SamplingDimensions = [11097, 400, 1042]
 
 print(f"Checkpoint: 5, time={time.time()-t_init:.2f} s")
 
