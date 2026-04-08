@@ -14,7 +14,7 @@ date
 module load ums ums032 dav-sdk      # frontier
 module load gcc-native/14.2 cray-mpich/9.0.1
 # module load paraview/5.13.3-mpi     # frontier
-PARAVIEW_PATH="~/ParaView-6.1.0-MPI-Linux-Python3.12-x86_64/"
+PARAVIEW_PATH="~/ParaView-6.1.0-MPI-Linux-Python3.12-x86_64"
 
 # srun -n $SLURM_NTASKS pvbatch dat_mhd_off_m4_r8_N5.py
 srun -n $SLURM_NTASKS $PARAVIEW_PATH"/bin/pvbatch" dat_mhd_off_m4_r8_N5.py
