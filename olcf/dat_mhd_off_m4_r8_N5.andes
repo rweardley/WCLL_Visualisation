@@ -11,6 +11,8 @@
 cd $SLURM_SUBMIT_DIR
 date
 
+SLURM_CPUS_PER_TASK=7
+
 module load paraview/5.13.3-osmesa  # andes
 
-srun -n $SLURM_NTASKS --cpus-per-task=$SLURM_TRES_PER_TASK pvbatch dat_mhd_off_m4_r8_N5.py
+srun -n $SLURM_NTASKS pvbatch dat_mhd_off_m4_r8_N5.py
