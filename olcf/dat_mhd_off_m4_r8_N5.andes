@@ -2,8 +2,8 @@
 #SBATCH -A FUS166
 #SBATCH -p gpu
 #SBATCH --nodes=4
-#SBATCH --ntasks-per-node=4
-#SBATCH --cpus-per-task=7
+#SBATCH --ntasks-per-node=14
+#SBATCH --cpus-per-task=2
 #SBATCH -t 01:00:00
 #SBATCH -J dat_mhd_off_m4_r8_N5
 #SBATCH --exclusive
@@ -11,7 +11,7 @@
 cd $SLURM_SUBMIT_DIR
 date
 
-SLURM_CPUS_PER_TASK=7
+SLURM_CPUS_PER_TASK=2
 
 module load paraview/5.13.3-osmesa  # andes
 
