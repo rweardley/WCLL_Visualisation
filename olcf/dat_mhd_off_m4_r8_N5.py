@@ -7,10 +7,10 @@ import sys
 t_init = time.time()
 
 # Get command-line arguments
-ts_idx = sys.argv[1]
+ts_idx = int(sys.argv[1])
 print(f"[{ts_idx}] >>> Timestep index: {ts_idx}")
-filter_domains = sys.argv[2]
-print(f"[{ts_idx}] >>> Filter domains: {bool(filter_domains)}")
+filter_domains = bool(sys.argv[2])
+print(f"[{ts_idx}] >>> Filter domains: {filter_domains}")
 
 print(f"[{ts_idx}] >>> Checkpoint: 1, time={time.time()-t_init:.2f} s")
 
