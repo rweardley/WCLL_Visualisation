@@ -17,7 +17,7 @@ module load gcc-native/14.2 cray-mpich/9.0.1
 # module load paraview/5.13.3-mpi     # frontier
 PARAVIEW_PATH="/ccs/home/rweardleybrunt/ParaView/ParaView-6.1.0-MPI-Linux-Python3.12-x86_64"
 
-filter_domains=0
+filter_domains=1
 timesteps=(0 5 10 14)
 
 for ts_idx in $timeseteps; do
