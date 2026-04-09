@@ -112,8 +112,9 @@ for ts_idx in range(len(nek5000_data.TimestepValues)):
             # Clean up
             Delete(resample)
             del resample
-            Delete(threshold)
-            del threshold
+            if filter_domains
+                Delete(threshold)
+                del threshold
             gc.collect
     gc.collect
 
