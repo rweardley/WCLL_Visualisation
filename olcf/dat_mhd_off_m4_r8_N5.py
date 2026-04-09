@@ -28,6 +28,7 @@ print(f"[{ts_idx}] >>> Checkpoint: 2, time={time.time()-t_init:.2f} s")
 nek5000_data = Nek5000Reader(FileName=input_file)
 nek5000_data.AddSpectralElementIdsasCellData = 1
 full_domain_bounds = nek5000_data.GetDataInformation().GetBounds()
+print(f"[{ts_idx}] >>> full_domain_bounds={full_domain_bounds}")
 
 print(f"[{ts_idx}] >>> Checkpoint: 3, time={time.time()-t_init:.2f} s")
 
@@ -55,12 +56,15 @@ for domain in range(len(domainNames)):
         x_ratio = abs((domain_bounds[1] - domain_bounds[0]) / (
             full_domain_bounds[1] - full_domain_bounds[0]
         ))
+        print(f"[{ts_idx}] >>> x_ratio={x_ratio}")
         y_ratio = abs((domain_bounds[3] - domain_bounds[2]) / (
             full_domain_bounds[3] - full_domain_bounds[2]
         ))
+        print(f"[{ts_idx}] >>> y_ratio={y_ratio}")
         z_ratio = abs((domain_bounds[5] - domain_bounds[4]) / (
             full_domain_bounds[5] - full_domain_bounds[4]
         ))
+        print(f"[{ts_idx}] >>> z_ratio={z_ratio}")
         domain_sampling_dimensions = [
             int(full_sampling_dimensions[0] * x_ratio),
             int(full_sampling_dimensions[1] * y_ratio),
