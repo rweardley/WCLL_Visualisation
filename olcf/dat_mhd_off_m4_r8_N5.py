@@ -66,6 +66,8 @@ for domain in range(len(domainNames)):
             int(full_sampling_dimensions[1] * y_ratio),
             int(full_sampling_dimensions[2] * z_ratio),
         ]
+        print(f"[{ts_idx}] >>> domain_sampling_dimensions={domain_sampling_dimensions}")
+        print(f"[{ts_idx}] >>> domain_bounds={domain_bounds}")
 
         print(f"[{ts_idx}] >>> Checkpoint: 4 ({domain}), time={time.time()-t_init:.2f} s")
         print(f"[{ts_idx}] >>> Resample to Image")
@@ -108,6 +110,7 @@ for domain in range(len(domainNames)):
         Delete(threshold)
         del threshold
     gc.collect()
+    print(f"[{ts_idx}] >>> Checkpoint: 7 ({domain}), time={time.time()-t_init:.2f} s")
 
-print(f"[{ts_idx}] >>> Checkpoint: 7, time={time.time()-t_init:.2f} s")
+print(f"[{ts_idx}] >>> Checkpoint: 8, time={time.time()-t_init:.2f} s")
 gc.collect()
