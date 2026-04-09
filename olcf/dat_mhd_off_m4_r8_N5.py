@@ -14,6 +14,7 @@ output_file = "/lustre/orion/fus166/proj-shared/rweb/dat_mhd_off_m4_r8_N5_x400"
 full_sampling_dimensions = [11097, 400, 1042]
 point_arrays = None
 #point_arrays = ["Velocity Magnitude"]
+filter_domains = False
 spectralIDs = [-1, 38733372, 140869280, 151935592, 245637464, 257676220]
 domainNames = ["water_TBM", "PbLi", "water_shield", "solid_TBM", "solid_shield"]
 process_timesteps = [0, 5, 10, 14]
@@ -44,15 +45,21 @@ for ts_idx in range(len(nek5000_data.TimestepValues)):
         print(">>> Commencing loop through domains")
 
         for domain in range(len(domainNames)):
-            threshold = Threshold(registrationName="Threshold", Input=nek5000_data)
-            print(f">>> Domain {domain}: {domainNames[domain]}, time={time.time()-t_init:.2f} s")
-            print(f">>> Filtering by Spectral Element ID, time={time.time()-t_init:.2f} s")
-            threshold.Set(
-                Scalars=["CELLS", "spectral element id"],
-                LowerThreshold=spectralIDs[domain]+1,
-                UpperThreshold=spectralIDs[domain + 1],
-            )
-            threshold.UpdatePipeline()
+            if filter_domains:
+                threshold = Threshold(registrationName="Threshold", Input=nek5000_data)
+                print(f">>> Domain {domain}: {domainNames[domain]}, time={time.time()-t_init:.2f} s")
+                print(f">>> Filtering by Spectral Element ID, time={time.time()-t_init:.2f} s")
+                threshold.Set(
+                    Scalars=["CELLS", "spectral element id"],
+                    LowerThreshold=spectralIDs[domain]+1,
+                    UpperThreshold=spectralIDs[domain + 1],
+                )
+                threshold.UpdatePipeline()
+            else:
+                if domain == 0:
+                    threshold = nek5000_data
+                else:
+                    continue
 
             # Get domain SamplingBounds and SamplingDimensions
             domain_bounds = threshold.GetDataInformation().GetBounds()
@@ -90,9 +97,11 @@ for ts_idx in range(len(nek5000_data.TimestepValues)):
             print(f">>> Checkpoint: 6 ({domain}), time={time.time()-t_init:.2f} s")
 
             # Save output as .vti (VTK ImageData format)
-            output_filename = f"{output_file}_{domainNames[domain]}_"
+            output_filename = f"{output_file}_"
+            if filter_domains:
+                output_filename += f"{domainNames[domain]}_"
             if point_arrays:
-                output_filename += '_'.join(point_arrays).replace(" ", "")
+                output_filename += '_'.join(point_arrays).replace(" ", "") + "_"
             output_filename += f'{ts_idx:03d}.pvti'
             SaveData(output_filename, proxy=resample)
 
