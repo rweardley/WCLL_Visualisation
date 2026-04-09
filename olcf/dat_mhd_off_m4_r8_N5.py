@@ -10,7 +10,7 @@ print(f"Checkpoint: 1, time={time.time()-t_init:.2f} s")
 # File path and output configuration
 
 input_file = "/lustre/orion/fus166/proj-shared/ylan/vis_rupert_gb26/dat_mhd_off_m4_r8_N5/pink.nek5000"
-output_file = "/lustre/orion/fus166/proj-shared/rweb/dat_mhd_off_m4_r8_N5_x400.pvti"
+output_file = "/lustre/orion/fus166/proj-shared/rweb/dat_mhd_off_m4_r8_N5_x400"
 full_sampling_dimensions = [11097, 400, 1042]
 point_arrays = None
 #point_arrays = ["Velocity Magnitude"]
