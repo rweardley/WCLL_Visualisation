@@ -27,8 +27,6 @@ print(f"[{ts_idx}] >>> Checkpoint: 2, time={time.time()-t_init:.2f} s")
 
 # Load NekRS data
 nek5000_data = Nek5000Reader(FileName=input_file)
-if point_arrays:
-    nek5000_data.PointArrays = point_arrays
 nek5000_data.AddSpectralElementIdsasCellData = 1
 full_domain_bounds = nek5000_data.GetDataInformation().GetBounds()
 
