@@ -55,39 +55,43 @@ for ts_idx in range(len(nek5000_data.TimestepValues)):
                     UpperThreshold=spectralIDs[domain + 1],
                 )
                 threshold.UpdatePipeline()
+
+                # Get domain SamplingBounds and SamplingDimensions
+                domain_bounds = threshold.GetDataInformation().GetBounds()
+                x_ratio = abs((domain_bounds[1] - domain_bounds[0]) / (
+                    full_domain_bounds[1] - full_domain_bounds[0]
+                ))
+                y_ratio = abs((domain_bounds[3] - domain_bounds[2]) / (
+                    full_domain_bounds[3] - full_domain_bounds[2]
+                ))
+                z_ratio = abs((domain_bounds[5] - domain_bounds[4]) / (
+                    full_domain_bounds[5] - full_domain_bounds[4]
+                ))
+                domain_sampling_dimensions = [
+                    int(full_sampling_dimensions[0] * x_ratio),
+                    int(full_sampling_dimensions[1] * y_ratio),
+                    int(full_sampling_dimensions[2] * z_ratio),
+                ]
+
+                print(f">>> Checkpoint: 4 ({domain}), time={time.time()-t_init:.2f} s")
+                print(">>> Resample to Image")
+
+                # Apply Resample To Image filter
+                resample = ResampleToImage(Input=threshold)
+                resample.Set(
+                    UseInputBounds=0,
+                    SamplingBounds=domain_bounds,
+                    SamplingDimensions=domain_sampling_dimensions,
+                )
             else:
                 if domain == 0:
-                    threshold = nek5000_data
+                    resample = ResampleToImage(Input=nek5000_data)
+                    resample.Set(
+                        UseInputBounds=1,
+                        SamplingDimensions=full_sampling_dimensions,
+                    )
                 else:
                     continue
-
-            # Get domain SamplingBounds and SamplingDimensions
-            domain_bounds = threshold.GetDataInformation().GetBounds()
-            x_ratio = abs((domain_bounds[1] - domain_bounds[0]) / (
-                full_domain_bounds[1] - full_domain_bounds[0]
-            ))
-            y_ratio = abs((domain_bounds[3] - domain_bounds[2]) / (
-                full_domain_bounds[3] - full_domain_bounds[2]
-            ))
-            z_ratio = abs((domain_bounds[5] - domain_bounds[4]) / (
-                full_domain_bounds[5] - full_domain_bounds[4]
-            ))
-            domain_sampling_dimensions = [
-                int(full_sampling_dimensions[0] * x_ratio),
-                int(full_sampling_dimensions[1] * y_ratio),
-                int(full_sampling_dimensions[2] * z_ratio),
-            ]
-
-            print(f">>> Checkpoint: 4 ({domain}), time={time.time()-t_init:.2f} s")
-            print(">>> Resample to Image")
-
-            # Apply Resample To Image filter
-            resample = ResampleToImage(Input=threshold)
-            resample.Set(
-                UseInputBounds=0,
-                SamplingBounds=domain_bounds,
-                SamplingDimensions=domain_sampling_dimensions,
-            )
 
             print(f">>> Checkpoint: 5 ({domain}), time={time.time()-t_init:.2f} s")
 
