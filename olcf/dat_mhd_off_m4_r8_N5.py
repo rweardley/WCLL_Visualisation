@@ -17,7 +17,7 @@ point_arrays = None
 filter_domains = False
 spectralIDs = [-1, 38733372, 140869280, 151935592, 245637464, 257676220]
 domainNames = ["water_TBM", "PbLi", "water_shield", "solid_TBM", "solid_shield"]
-process_timesteps = [0, 5, 10, 14]
+process_timesteps = [5, 10, 14]
 
 print(f">>> Checkpoint: 2, time={time.time()-t_init:.2f} s")
 
