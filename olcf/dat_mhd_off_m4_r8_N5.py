@@ -35,18 +35,19 @@ print(">>> Commencing loop through timesteps")
 for ts_idx in range(len(nek5000_data.TimestepValues)):
     print(f">>> Processing timestep {ts_idx} ({ts_idx + 1}/{len(nek5000_data.TimestepValues)})")
     if ts_idx not in process_timesteps:
-        print(">>> Skipping timestep {ts_idx}")
+        print(f">>> Skipping timestep {ts_idx}")
     else:
 
         # Update pipeline to execute data loading for current timestep
         nek5000_data.UpdatePipeline(time=nek5000_data.TimestepValues[ts_idx])
+        gc.collect()
 
         # Loop through domains and resample each
         print(">>> Commencing loop through domains")
 
         for domain in range(len(domainNames)):
             if filter_domains:
-                threshold = Threshold(registrationName="Threshold", Input=nek5000_data)
+                threshold = Threshold(registrationName=f"Threshold_{ts_idx}_{domain}", Input=nek5000_data)
                 print(f">>> Domain {domain}: {domainNames[domain]}, time={time.time()-t_init:.2f} s")
                 print(f">>> Filtering by Spectral Element ID, time={time.time()-t_init:.2f} s")
                 threshold.Set(
@@ -77,7 +78,7 @@ for ts_idx in range(len(nek5000_data.TimestepValues)):
                 print(">>> Resample to Image")
 
                 # Apply Resample To Image filter
-                resample = ResampleToImage(Input=threshold)
+                resample = ResampleToImage(registrationName=f"Resample_{ts_idx}_{domain}", Input=threshold)
                 resample.Set(
                     UseInputBounds=0,
                     SamplingBounds=domain_bounds,
@@ -115,8 +116,8 @@ for ts_idx in range(len(nek5000_data.TimestepValues)):
             if filter_domains:
                 Delete(threshold)
                 del threshold
-            gc.collect
-    gc.collect
+            gc.collect()
+    gc.collect()
 
 print(f">>> Checkpoint: 7, time={time.time()-t_init:.2f} s")
-gc.collect
+gc.collect()
