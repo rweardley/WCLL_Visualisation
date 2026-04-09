@@ -5,7 +5,7 @@ import gc
 
 t_init = time.time()
 
-print(f"Checkpoint: 1, time={time.time()-t_init:.2f} s")
+print(f">>> Checkpoint: 1, time={time.time()-t_init:.2f} s")
 
 # File path and output configuration
 
@@ -17,7 +17,7 @@ point_arrays = None
 spectralIDs = [-1, 38733372, 140869280, 151935592, 245637464, 257676220]
 domainNames = ["water_TBM", "PbLi", "water_shield", "solid_TBM", "solid_shield"]
 
-print(f"Checkpoint: 2, time={time.time()-t_init:.2f} s")
+print(f">>> Checkpoint: 2, time={time.time()-t_init:.2f} s")
 
 # Load NekRS data
 nek5000_data = Nek5000Reader(FileName=input_file)
@@ -26,23 +26,23 @@ if point_arrays:
 nek5000_data.AddSpectralElementIdsasCellData = 1
 full_domain_bounds = nek5000_data.GetDataInformation().GetBounds()
 
-print(f"Checkpoint: 3, time={time.time()-t_init:.2f} s")
+print(f">>> Checkpoint: 3, time={time.time()-t_init:.2f} s")
 
-print("Commencing loop through timesteps")
+print(">>> Commencing loop through timesteps")
 
 for ts_idx in range(len(nek5000_data.TimestepValues)):
-    print(f"Processing timestep {ts_idx + 1}/{len(nek5000_data.TimestepValues)}")
+    print(f">>> Processing timestep {ts_idx + 1}/{len(nek5000_data.TimestepValues)}")
 
     # Update pipeline to execute data loading for current timestep
     nek5000_data.UpdatePipeline(time=nek5000_data.TimestepValues[ts_idx])
 
     # Loop through domains and resample each
-    print("Commencing loop through domains")
+    print(">>> Commencing loop through domains")
 
     for domain in range(len(domainNames)):
         threshold = Threshold(registrationName="Threshold", Input=nek5000_data)
-        print(f"Domain {domain}: {domainNames[domain]}, time={time.time()-t_init:.2f} s")
-        print(f"Filtering by Spectral Element ID, time={time.time()-t_init:.2f} s")
+        print(f">>> Domain {domain}: {domainNames[domain]}, time={time.time()-t_init:.2f} s")
+        print(f">>> Filtering by Spectral Element ID, time={time.time()-t_init:.2f} s")
         threshold.Set(
             Scalars=["CELLS", "spectral element id"],
             LowerThreshold=spectralIDs[domain]+1,
@@ -67,8 +67,8 @@ for ts_idx in range(len(nek5000_data.TimestepValues)):
             int(full_sampling_dimensions[2] * z_ratio),
         ]
 
-        print(f"Checkpoint: 4 ({domain}), time={time.time()-t_init:.2f} s")
-        print("Resample to Image")
+        print(f">>> Checkpoint: 4 ({domain}), time={time.time()-t_init:.2f} s")
+        print(">>> Resample to Image")
 
         # Apply Resample To Image filter
         resample = ResampleToImage(Input=threshold)
@@ -78,12 +78,12 @@ for ts_idx in range(len(nek5000_data.TimestepValues)):
             SamplingDimensions=domain_sampling_dimensions,
         )
 
-        print(f"Checkpoint: 5 ({domain}), time={time.time()-t_init:.2f} s")
+        print(f">>> Checkpoint: 5 ({domain}), time={time.time()-t_init:.2f} s")
 
         # Update pipeline for resampling
         resample.UpdatePipeline()
 
-        print(f"Checkpoint: 6 ({domain}), time={time.time()-t_init:.2f} s")
+        print(f">>> Checkpoint: 6 ({domain}), time={time.time()-t_init:.2f} s")
 
         # Save output as .vti (VTK ImageData format)
         output_filename = f"{output_file}_{domainNames[domain]}_"
@@ -100,5 +100,5 @@ for ts_idx in range(len(nek5000_data.TimestepValues)):
         gc.collect
     gc.collect
 
-print(f"Checkpoint: 7, time={time.time()-t_init:.2f} s")
+print(f">>> Checkpoint: 7, time={time.time()-t_init:.2f} s")
 gc.collect
