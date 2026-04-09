@@ -27,14 +27,16 @@ print(f"[{ts_idx}] >>> Checkpoint: 2, time={time.time()-t_init:.2f} s")
 # Load NekRS data
 nek5000_data = Nek5000Reader(FileName=input_file)
 nek5000_data.AddSpectralElementIdsasCellData = 1
-full_domain_bounds = nek5000_data.GetDataInformation().GetBounds()
-print(f"[{ts_idx}] >>> full_domain_bounds={full_domain_bounds}")
 
 print(f"[{ts_idx}] >>> Checkpoint: 3, time={time.time()-t_init:.2f} s")
 
 # Update pipeline to execute data loading for current timestep
 nek5000_data.UpdatePipeline(time=nek5000_data.TimestepValues[ts_idx])
+
 gc.collect()
+
+full_domain_bounds = nek5000_data.GetDataInformation().GetBounds()
+print(f"[{ts_idx}] >>> full_domain_bounds={full_domain_bounds}")
 
 # Loop through domains and resample each
 print(f"[{ts_idx}] >>> Commencing loop through domains")
