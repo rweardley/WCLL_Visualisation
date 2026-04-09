@@ -1,21 +1,21 @@
-# pvbatch script for resampling NEK5000 data
 from paraview.simple import *
 import time
 import gc
 
 t_init = time.time()
 
+input_file = "/home/rupert/NekRS/user_problems/nekrs_mhd_examples_v26/shercliff/shercliff_exo/Ha20_inductionless_recycling/channel.nek5000"
+output_file = "/home/rupert/NekRS/user_problems/nekrs_mhd_examples_v26/shercliff/shercliff_exo/Ha20_inductionless_recycling/case"
+
 print(f"Checkpoint: 1, time={time.time()-t_init:.2f} s")
 
 # File path and output configuration
 
-input_file = "/lustre/orion/fus166/proj-shared/ylan/vis_rupert_gb26/dat_mhd_off_m4_r8_N5/pink.nek5000"
-output_file = "/lustre/orion/fus166/proj-shared/rweb/dat_mhd_off_m4_r8_N5_x400.pvti"
-full_sampling_dimensions = [11097, 400, 1042]
+full_sampling_dimensions = [100, 100, 100]
 point_arrays = None
 #point_arrays = ["Velocity Magnitude"]
-spectralIDs = [-1, 38733372, 140869280, 151935592, 245637464, 257676220]
-domainNames = ["water_TBM", "PbLi", "water_shield", "solid_TBM", "solid_shield"]
+spectralIDs = [-1, 10, 50, 95]
+domainNames = ["A", "B", "C"]
 
 print(f"Checkpoint: 2, time={time.time()-t_init:.2f} s")
 
@@ -41,8 +41,7 @@ for ts_idx in range(len(nek5000_data.TimestepValues)):
 
     for domain in range(len(domainNames)):
         threshold = Threshold(registrationName="Threshold", Input=nek5000_data)
-        print(f"Domain {domain}: {domainNames[domain]}, time={time.time()-t_init:.2f} s")
-        print(f"Filtering by Spectral Element ID, time={time.time()-t_init:.2f} s")
+        print(f"Domain {domain}: {domainNames[domain]}")
         threshold.Set(
             Scalars=["CELLS", "spectral element id"],
             LowerThreshold=spectralIDs[domain]+1,
@@ -52,23 +51,28 @@ for ts_idx in range(len(nek5000_data.TimestepValues)):
 
         # Get domain SamplingBounds and SamplingDimensions
         domain_bounds = threshold.GetDataInformation().GetBounds()
+        # domain_bounds = threshold.GetBounds()
+        print(domain_bounds)
         x_ratio = abs((domain_bounds[1] - domain_bounds[0]) / (
             full_domain_bounds[1] - full_domain_bounds[0]
         ))
+        print(x_ratio)
         y_ratio = abs((domain_bounds[3] - domain_bounds[2]) / (
             full_domain_bounds[3] - full_domain_bounds[2]
         ))
+        print(y_ratio)
         z_ratio = abs((domain_bounds[5] - domain_bounds[4]) / (
             full_domain_bounds[5] - full_domain_bounds[4]
         ))
+        print(z_ratio)
         domain_sampling_dimensions = [
             int(full_sampling_dimensions[0] * x_ratio),
             int(full_sampling_dimensions[1] * y_ratio),
             int(full_sampling_dimensions[2] * z_ratio),
         ]
+        print(domain_sampling_dimensions)
 
         print(f"Checkpoint: 4 ({domain}), time={time.time()-t_init:.2f} s")
-        printf("Resample to Image")
 
         # Apply Resample To Image filter
         resample = ResampleToImage(Input=threshold)
@@ -77,6 +81,11 @@ for ts_idx in range(len(nek5000_data.TimestepValues)):
             SamplingBounds=domain_bounds,
             SamplingDimensions=domain_sampling_dimensions,
         )
+        # resample.Set(
+        #     UseInputBounds=0,
+        #     SamplingBounds=full_domain_bounds,
+        #     SamplingDimensions=full_sampling_dimensions,
+        # )
 
         print(f"Checkpoint: 5 ({domain}), time={time.time()-t_init:.2f} s")
 
@@ -91,7 +100,7 @@ for ts_idx in range(len(nek5000_data.TimestepValues)):
             output_filename += '_'.join(point_arrays).replace(" ", "")
         output_filename += f'{ts_idx:03d}.pvti'
         SaveData(output_filename, proxy=resample)
-
+        
         # Clean up
         Delete(resample)
         del resample
@@ -100,5 +109,6 @@ for ts_idx in range(len(nek5000_data.TimestepValues)):
         gc.collect
     gc.collect
 
+
+
 print(f"Checkpoint: 7, time={time.time()-t_init:.2f} s")
-gc.collect
