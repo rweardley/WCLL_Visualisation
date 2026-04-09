@@ -99,8 +99,6 @@ for domain in range(len(domainNames)):
     output_filename = f"{output_file}_"
     if filter_domains:
         output_filename += f"{domainNames[domain]}_"
-    if point_arrays:
-        output_filename += '_'.join(point_arrays).replace(" ", "") + "_"
     output_filename += f'{ts_idx:03d}.pvti'
     SaveData(output_filename, proxy=resample)
 
