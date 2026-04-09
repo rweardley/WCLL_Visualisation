@@ -68,7 +68,7 @@ for ts_idx in range(len(nek5000_data.TimestepValues)):
         ]
 
         print(f"Checkpoint: 4 ({domain}), time={time.time()-t_init:.2f} s")
-        printf("Resample to Image")
+        print("Resample to Image")
 
         # Apply Resample To Image filter
         resample = ResampleToImage(Input=threshold)
