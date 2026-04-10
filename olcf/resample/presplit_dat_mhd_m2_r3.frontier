@@ -12,15 +12,12 @@
 cd $SLURM_SUBMIT_DIR
 date
 
-# module load ums ums032 dav-sdk      # frontier
-# module load gcc-native/14.2 cray-mpich/9.0.1
 PARAVIEW_PATH="/ccs/home/rweardleybrunt/ParaView/ParaView-6.1.0-MPI-Linux-Python3.12-x86_64"
 
-filter_domains=1
+filter_domains=0
 timesteps=(0 1 2)
-polynomial_order=5
 input_dir="/lustre/orion/fus166/proj-shared/rweb/dat_mhd_m2_r3_split"
-output_dir="$input_dir/resampled/"
+output_dir="$input_dir/resampled"
 
 mkdir -p $output_dir
 
