@@ -4,7 +4,7 @@ import resample
 # Get command-line arguments
 ts_idx = int(sys.argv[1])
 print(f"[{ts_idx}] !!! Timestep index: {ts_idx}")
-filter_domains = bool(sys.argv[2])
+filter_domains = bool(int(sys.argv[2]))
 print(f"[{ts_idx}] !!! Filter domains: {filter_domains}")
 input_file = str(sys.argv[3])
 print(f"[{ts_idx}] !!! Input file: {input_file}")
