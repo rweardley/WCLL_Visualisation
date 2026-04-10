@@ -10,6 +10,8 @@ input_file = str(sys.argv[3])
 print(f"[{ts_idx}] !!! Input file: {input_file}")
 output_file = str(sys.argv[4])
 print(f"[{ts_idx}] !!! Output file: {output_file}")
+res = int(sys.argv[5])
+print(f"[{ts_idx}] !!! Resolution g: {400}")
 
 spectralIDs = None
 domainNames = ["PRESPLIT"]
@@ -23,7 +25,6 @@ input_ranges = [
     abs(input_bounds[5] - input_bounds[4]),
 ]
 min_range = min(input_ranges)
-res = 400
 full_sampling_dimensions = [
     int(res * input_range / min_range) for input_range in input_ranges
 ]

@@ -18,6 +18,7 @@ filter_domains=0
 timesteps=(0 1 2)
 input_dir="/lustre/orion/fus166/proj-shared/rweb/dat_mhd_m2_r3_split"
 output_dir="$input_dir/resampled"
+res=400
 
 mkdir -p $output_dir
 
@@ -32,6 +33,7 @@ for domain in ${domains[@]}; do
     output_file="${output_dir}/${domain}"
     for ts_idx in ${timesteps[@]}; do
         echo "[$ts_idx] >>> \bin\bash >>> launching python"
-        $PARAVIEW_PATH"/bin/mpiexec" -n $SLURM_NTASKS $PARAVIEW_PATH"/bin/pvbatch" presplit_resample.py $ts_idx $filter_domains $input_file $output_file
+        $PARAVIEW_PATH"/bin/mpiexec" -n $SLURM_NTASKS $PARAVIEW_PATH"/bin/pvbatch"  \
+            presplit_resample.py $ts_idx $filter_domains $input_file $output_file $res
     done
 done
