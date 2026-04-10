@@ -674,39 +674,51 @@ def main(fdr, case, out_fdr, select_list):
 
 if __name__ == "__main__":
     if rank == 0:
-        print(sys.argv[0], flush=True)
+        args = sys.argv # get all arguments
+        print(args[0], flush=True) # print script name
+    else:
+        args = None
 
-    fdr = "./"
-    out_fdr = "./dat_split"
+    args = comm.bcast(args, root=0)
 
-#    fdr = "./"
-#    select_list = {
-#        "file1": (1, 512),
-#        "file2": (513, 1024),
-#    }
-#    case = "channel.nek5000"
-#    main(fdr, case, out_fdr, select_list)
+    fdr = str(args[1])
+    out_fdr = str(args[2])
 
-    # range-based selectors: much smaller memory footprint
-    select_list = {
-        "water_tbm":  (1,         38733372),
-        "pbli":       (38733373,  140869280),
-        "water_sh":   (140869281, 151935592),
-        "steel_tbm":  (151935593, 245637464),
-        "steel_sh":   (245637465, 257676220),
-    }
+    case_pink = bool(args[3])
+    case_mhdpink = bool(args[4])
 
-    case = "pink.nek5000"
-    main(fdr, case, out_fdr, select_list)
+    mesh = str(args[5])
 
-    case = "mhdpink.nek5000"
-    main(fdr, case, out_fdr, select_list)
+    if mesh == "m2":
+        select_list = {
+            "water_tbm":  (1,        20337300),
+            "pbli":       (20337301, 79602344),
+            "water_sh":   (79602345, 85626260),
+            "steel_tbm":  (85626261, 139809796),
+            "steel_sh":   (139809797, 146347326),
+        }
+    elif mesh == "m4":
+        select_list = {
+            "water_tbm":  (1,         38733372),
+            "pbli":       (38733373,  140869280),
+            "water_sh":   (140869281, 151935592),
+            "steel_tbm":  (151935593, 245637464),
+            "steel_sh":   (245637465, 257676220),
+        }
+
+    if case_pink:
+        case = "pink.nek5000"
+        main(fdr, case, out_fdr, select_list)
+
+    if case_mhdpink:
+        case = "mhdpink.nek5000"
+        main(fdr, case, out_fdr, select_list)
 
     # --- ending summary ---
     if rank == 0:
         print("==================================================", flush=True)
         print("=== Split complete ===", flush=True)
-        print(f"out_dir     : {out_dir}", flush=True)
+        print(f"out_dir     : {out_fdr}", flush=True)
         print("status      : OK", flush=True)
         print("==================================================", flush=True)
         print("", flush=True)
