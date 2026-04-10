@@ -684,8 +684,8 @@ if __name__ == "__main__":
     fdr = str(args[1])
     out_fdr = str(args[2])
 
-    case_pink = bool(args[3])
-    case_mhdpink = bool(args[4])
+    case_pink = bool(int(args[3]))
+    case_mhdpink = bool(int(args[4]))
 
     mesh = str(args[5])
 
