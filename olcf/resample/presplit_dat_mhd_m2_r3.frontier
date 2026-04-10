@@ -1,0 +1,40 @@
+#!/bin/bash
+#SBATCH -A FUS166
+#SBATCH -p batch
+#SBATCH --nodes=2
+#SBATCH --ntasks-per-node=4
+#SBATCH --cpus-per-task=14
+#SBATCH -t 01:00:00
+#SBATCH -q debug
+#SBATCH -J dat_mhd_off_m4_r8_N5
+#SBATCH --exclusive
+
+cd $SLURM_SUBMIT_DIR
+date
+
+# module load ums ums032 dav-sdk      # frontier
+# module load gcc-native/14.2 cray-mpich/9.0.1
+PARAVIEW_PATH="/ccs/home/rweardleybrunt/ParaView/ParaView-6.1.0-MPI-Linux-Python3.12-x86_64"
+
+filter_domains=1
+timesteps=(0 1 2)
+polynomial_order=5
+input_dir="/lustre/orion/fus166/proj-shared/rweb/dat_mhd_m2_r3_split"
+output_dir="$input_dir/resampled/"
+
+mkdir -p $output_dir
+
+domains=("pbli"
+         "steel_sh"
+         "steel_tbm"
+         "water_sh"
+         "water_tbm")
+
+for domain in ${domains[@]}; do
+    input_file="${input_dir}/${domain}_pink.nek500"
+    output_file="${output_dir}/${domain}"
+    for ts_idx in ${timesteps[@]}; do
+        echo "[$ts_idx] >>> \bin\bash >>> launching python"
+        $PARAVIEW_PATH"/bin/mpiexec" -n $SLURM_NTASKS $PARAVIEW_PATH"/bin/pvbatch" dat_mhd_off_m4_r8_N5.py $ts_idx $filter_domains $input_file $output_file
+    done
+done
