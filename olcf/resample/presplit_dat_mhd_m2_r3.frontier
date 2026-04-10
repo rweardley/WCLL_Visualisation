@@ -35,6 +35,6 @@ for domain in ${domains[@]}; do
     output_file="${output_dir}/${domain}"
     for ts_idx in ${timesteps[@]}; do
         echo "[$ts_idx] >>> \bin\bash >>> launching python"
-        $PARAVIEW_PATH"/bin/mpiexec" -n $SLURM_NTASKS $PARAVIEW_PATH"/bin/pvbatch" dat_mhd_off_m4_r8_N5.py $ts_idx $filter_domains $input_file $output_file
+        $PARAVIEW_PATH"/bin/mpiexec" -n $SLURM_NTASKS $PARAVIEW_PATH"/bin/pvbatch" presplit_resample.py $ts_idx $filter_domains $input_file $output_file
     done
 done
