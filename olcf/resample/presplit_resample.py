@@ -12,7 +12,7 @@ output_file = str(sys.argv[4])
 print(f"[{ts_idx}] !!! Output file: {output_file}")
 
 spectralIDs = None
-domainNames = None
+domainNames = ["PRESPLIT"]
 
 # calculate full-domain sampling resolution
 
