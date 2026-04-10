@@ -21,7 +21,8 @@ def nekrs_resample_to_image(input_file, output_file, full_sampling_dimensions, t
 
     # Load NekRS data
     nek5000_data = Nek5000Reader(FileName=input_file)
-    nek5000_data.AddSpectralElementIdsasCellData = 1
+    if filter_domains:
+        nek5000_data.AddSpectralElementIdsasCellData = 1
 
     print(f"[{ts_idx}] >>> Checkpoint: 3, time={time.time()-t_init:.2f} s")
 
