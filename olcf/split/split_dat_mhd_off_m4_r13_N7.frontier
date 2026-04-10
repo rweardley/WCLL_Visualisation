@@ -1,0 +1,18 @@
+#!/bin/bash
+#SBATCH -A fus166
+#SBATCH -q normal
+#SBATCH -t 02:00:00
+#SBATCH -N 60
+#SBATCH --ntasks-per-node=56
+#SBATCH -J split_flds
+#SBATCH -o log_%x-%j.out
+
+module load cray-python/3.11.7
+
+SOURCE_DIR="/lustre/orion/fus166/proj-shared/ylan/vis_rupert_gb26/dat_mhd_off_m4_r13_N7/"
+OUTPUT_DIR="/lustre/orion/fus166/proj-shared/rweb/dat_mhd_off_m4_r13_N7_split/"
+PINK=1
+MHDPINK=0
+MESH="m4"
+
+srun --cpu-bind=cores --threads-per-core=1 --label python3 split_nek5000.py $SOURCE_DIR $OUTPUT_DIR $PINK $MHDPINK $MESH
