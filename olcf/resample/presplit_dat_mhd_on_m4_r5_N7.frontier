@@ -1,12 +1,12 @@
 #!/bin/bash
 #SBATCH -A FUS166
 #SBATCH -p batch
-#SBATCH --nodes=2
+#SBATCH --nodes=32
 #SBATCH --ntasks-per-node=4
 #SBATCH --cpus-per-task=14
 #SBATCH -t 01:00:00
 #SBATCH -q debug
-#SBATCH -J resample_mhd_m2_r3
+#SBATCH -J resample_mhd_on_m4_r5_N7
 #SBATCH --exclusive
 
 cd $SLURM_SUBMIT_DIR
@@ -15,9 +15,10 @@ date
 PARAVIEW_PATH="/ccs/home/rweardleybrunt/ParaView/ParaView-6.1.0-MPI-Linux-Python3.12-x86_64"
 
 filter_domains=0
-timesteps=(0 1 2)
-input_dir="/lustre/orion/fus166/proj-shared/rweb/dat_mhd_m2_r3_split"
-output_dir="$input_dir/resampled"
+#timesteps=(0 1)
+timesteps=(0)
+input_dir="/lustre/orion/fus166/proj-shared/ylan/vis_rupert_gb26/dat_mhd_on_m4_r5_N7/dat_split"
+output_dir="/lustre/orion/fus166/proj-shared/rweb/dat_mhd_on_m4_r5_N7/resampled"
 
 mkdir -p $output_dir
 
