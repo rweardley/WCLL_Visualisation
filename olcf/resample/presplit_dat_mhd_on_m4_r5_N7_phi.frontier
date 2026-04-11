@@ -17,7 +17,7 @@ PARAVIEW_PATH="/ccs/home/rweardleybrunt/ParaView/ParaView-6.1.0-MPI-Linux-Python
 filter_domains=0
 timesteps=(0 1)
 input_dir="/lustre/orion/fus166/proj-shared/ylan/vis_rupert_gb26/dat_mhd_on_m4_r5_N7/dat_split"
-output_dir="/lustre/orion/fus166/proj-shared/rweb/dat_mhd_on_m4_r5_N7/resampled"
+output_dir="/lustre/orion/fus166/proj-shared/rweb/dat_mhd_on_m4_r5_N7/resampled_phi"
 res=400
 
 mkdir -p $output_dir
@@ -29,7 +29,7 @@ domains=("pbli"
          "water_tbm")
 
 for domain in ${domains[@]}; do
-    input_file="${input_dir}/${domain}_pink.nek5000"
+    input_file="${input_dir}/${domain}_mhdpink.nek5000"
     output_file="${output_dir}/${domain}"
     for ts_idx in ${timesteps[@]}; do
         echo "[$ts_idx] >>> \bin\bash >>> launching python"
