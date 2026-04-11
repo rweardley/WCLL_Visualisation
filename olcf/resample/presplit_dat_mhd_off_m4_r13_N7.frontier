@@ -16,7 +16,7 @@ PARAVIEW_PATH="/ccs/home/rweardleybrunt/ParaView/ParaView-6.1.0-MPI-Linux-Python
 
 filter_domains=0
 timesteps=(0 1 2)
-input_dir="/lustre/orion/fus166/proj-shared/ylan/vis_rupert_gb26/dat_mhd_off_m4_r13_N7/dat_split"
+input_dir="/lustre/orion/fus166/proj-shared/ylan/vis_rupert_gb26/dat_mhd_off_m4_r13_N7"
 output_dir="/lustre/orion/fus166/proj-shared/rweb/dat_mhd_off_m4_r13_N7/resampled"
 res=400
 
