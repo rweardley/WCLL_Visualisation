@@ -612,6 +612,19 @@ def main(fdr, case, out_fdr, select_list):
         fname_rel = fld_name_from_template(meta, ifile, file_id=0)
         fname_in = os.path.join(case_dir, fname_rel)
 
+        # Check if file exists before attempting to process
+        file_exists = False
+        if rank == 0:
+            file_exists = os.path.isfile(fname_in)
+        file_exists = comm.bcast(file_exists, root=0)
+
+        if not file_exists:
+            if rank == 0:
+                print("--------------------------------------------------", flush=True)
+                print(f"input skip  : {fname_in} (file not found)", flush=True)
+                print("", flush=True)
+            continue
+
         if rank == 0:
             print("--------------------------------------------------", flush=True)
             print(f"input start : {fname_in}", flush=True)
