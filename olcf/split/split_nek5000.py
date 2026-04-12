@@ -698,6 +698,14 @@ if __name__ == "__main__":
             "steel_tbm":  (85626261, 139809796),
             "steel_sh":   (139809797, 146347326),
         }
+    elif mesh == "m3":
+        select_list = {
+            "water_tbm":  (1,        21918860),
+            "pbli":       (21918861, 91142332),
+            "water_sh":   (91142333, 98044916),
+            "steel_tbm":  (98044917, 154865268),
+            "steel_sh":   (154865269, 162313460),
+        }
     elif mesh == "m4":
         select_list = {
             "water_tbm":  (1,         38733372),
