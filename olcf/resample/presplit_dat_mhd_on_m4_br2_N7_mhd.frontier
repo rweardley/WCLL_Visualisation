@@ -1,0 +1,39 @@
+#!/bin/bash
+#SBATCH -A FUS166
+#SBATCH -p batch
+#SBATCH --nodes=32
+#SBATCH --ntasks-per-node=4
+#SBATCH --cpus-per-task=14
+#SBATCH -t 01:30:00
+#SBATCH -q debug
+#SBATCH -J resample_mhd_off_m4_r13_N7
+#SBATCH --exclusive
+
+cd $SLURM_SUBMIT_DIR
+date
+
+PARAVIEW_PATH="/ccs/home/rweardleybrunt/ParaView/ParaView-6.1.0-MPI-Linux-Python3.12-x86_64"
+
+filter_domains=0
+timesteps=(0)
+input_dir="/lustre/orion/fus166/proj-shared/rweb/dat_mhd_on_m4_br2_N7_split"
+output_dir="/lustre/orion/fus166/proj-shared/rweb/dat_mhd_on_m4_br2_N7_split/resampled"
+res=400
+
+mkdir -p $output_dir
+
+domains=("pbli"
+         "steel_sh"
+         "steel_tbm"
+         "water_sh"
+         "water_tbm")
+
+for domain in ${domains[@]}; do
+    input_file="${input_dir}/${domain}_mhdpink.nek5000"
+    output_file="${output_dir}/${domain}"
+    for ts_idx in ${timesteps[@]}; do
+        echo "[$ts_idx] >>> \bin\bash >>> launching python"
+        $PARAVIEW_PATH"/bin/mpiexec" -n $SLURM_NTASKS $PARAVIEW_PATH"/bin/pvbatch"  \
+            presplit_resample.py $ts_idx $filter_domains $input_file $output_file $res
+    done
+done
