@@ -9,10 +9,10 @@
 
 module load cray-python/3.11.7
 
-SOURCE_DIR="/lustre/orion/fus166/proj-shared/ylan/vis_rupert_gb26/dat_mhd_off_m4_r13_N7/"
-OUTPUT_DIR="/lustre/orion/fus166/proj-shared/rweb/dat_mhd_off_m4_r13_N7_split/"
+SOURCE_DIR="/lustre/orion/fus166/proj-shared/ylan/vis_rupert_gb26/dat_mhd_on_m4_br1_N7/"
+OUTPUT_DIR="/lustre/orion/fus166/proj-shared/rweb/dat_mhd_on_m4_br1_N7_split/"
 PINK=1
-MHDPINK=0
+MHDPINK=1
 CURRPINK=0
 MESH="m4"
 

@@ -686,8 +686,9 @@ if __name__ == "__main__":
 
     case_pink = bool(int(args[3]))
     case_mhdpink = bool(int(args[4]))
+    case_currpink = bool(int(args[5]))
 
-    mesh = str(args[5])
+    mesh = str(args[6])
 
     if mesh == "m2":
         select_list = {
@@ -712,6 +713,10 @@ if __name__ == "__main__":
 
     if case_mhdpink:
         case = "mhdpink.nek5000"
+        main(fdr, case, out_fdr, select_list)
+
+    if case_currpink:
+        case = "currpink.nek5000"
         main(fdr, case, out_fdr, select_list)
 
     # --- ending summary ---
