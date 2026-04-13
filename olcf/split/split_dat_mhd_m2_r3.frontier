@@ -15,6 +15,5 @@ PINK=1
 MHDPINK=1
 CURRPINK=1
 MESH="m2"
-CASENAME="pink3b_tri"
 
 srun --cpu-bind=cores --threads-per-core=1 --label python3 split_nek5000.py $SOURCE_DIR $OUTPUT_DIR $PINK $MHDPINK $CURRPINK $MESH $CASENAME
