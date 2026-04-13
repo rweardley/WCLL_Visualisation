@@ -12,8 +12,8 @@ module load cray-python/3.11.7
 SOURCE_DIR="/lustre/orion/fus166/proj-shared/ylan/vis_rupert_gb26/dat_mhd_m2_r3/"
 OUTPUT_DIR="/lustre/orion/fus166/proj-shared/rweb/dat_mhd_m2_r3_split/"
 PINK=1
-MHDPINK=0
-CURRPINK=0
+MHDPINK=1
+CURRPINK=1
 MESH="m2"
 CASENAME="pink3b_tri"
 
