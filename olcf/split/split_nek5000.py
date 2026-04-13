@@ -703,6 +703,8 @@ if __name__ == "__main__":
 
     mesh = str(args[6])
 
+    case_name = str(args[7])
+
     if mesh == "m2":
         select_list = {
             "water_tbm":  (1,        20337300),
@@ -729,15 +731,15 @@ if __name__ == "__main__":
         }
 
     if case_pink:
-        case = "pink.nek5000"
+        case = case_name + ".nek5000"
         main(fdr, case, out_fdr, select_list)
 
     if case_mhdpink:
-        case = "mhdpink.nek5000"
+        case = "mhd" + case_name + ".nek5000"
         main(fdr, case, out_fdr, select_list)
 
     if case_currpink:
-        case = "currpink.nek5000"
+        case = "curr" + case_name + ".nek5000"
         main(fdr, case, out_fdr, select_list)
 
     # --- ending summary ---
