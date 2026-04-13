@@ -37,11 +37,10 @@ def nekrs_resample_to_image(input_file, output_file, full_sampling_dimensions, t
         full_domain_bounds = nek5000_data.GetDataInformation().GetBounds()
     print(f"[{ts_idx}] >>> full_domain_bounds={full_domain_bounds}")
 
-    # Loop through domains and resample each
-    print(f"[{ts_idx}] >>> Commencing loop through domains")
-
     for domain in range(len(domainNames)):
         if filter_domains:
+            if domain == 0:
+                print(f"[{ts_idx}] >>> Commencing loop through domains")
             threshold = Threshold(registrationName=f"Threshold_{ts_idx}_{domain}", Input=nek5000_data)
             print(f"[{ts_idx}] >>> Domain {domain}: {domainNames[domain]}, time={time.time()-t_init:.2f} s")
             print(f"[{ts_idx}] >>> Filtering by Spectral Element ID, time={time.time()-t_init:.2f} s")
