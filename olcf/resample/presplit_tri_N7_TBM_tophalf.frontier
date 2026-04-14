@@ -18,7 +18,7 @@ PARAVIEW_PATH="/ccs/home/rweardleybrunt/ParaView/ParaView-6.1.0-MPI-Linux-Python
 filter_domains=0
 timesteps=(0)
 input_dir="/lustre/orion/fus166/proj-shared/rweb/tri_m3_N7"
-output_dir="/lustre/orion/fus166/proj-shared/rweb/tri_m3_N7/resampled"
+output_dir="/lustre/orion/fus166/proj-shared/rweb/tri_m3_N7/resampled_TBM_tophalf"
 res=700
 input_bounds="-0.461538,14.3,-5.63846,5.63846,-3,14.6846"
 
