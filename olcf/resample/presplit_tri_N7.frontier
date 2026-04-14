@@ -5,7 +5,7 @@
 #SBATCH --ntasks-per-node=4
 #SBATCH --cpus-per-task=14
 #SBATCH -t 01:30:00
-#SBATCH -q debug
+##SBATCH -q debug
 #SBATCH -J tri_m3_N7
 #SBATCH -o log_%x-%j.out
 #SBATCH --exclusive
