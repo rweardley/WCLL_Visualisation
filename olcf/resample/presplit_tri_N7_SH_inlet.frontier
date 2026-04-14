@@ -1,12 +1,12 @@
 #!/bin/bash
 #SBATCH -A FUS166
 #SBATCH -p batch
-#SBATCH --nodes=32
+#SBATCH --nodes=20
 #SBATCH --ntasks-per-node=4
 #SBATCH --cpus-per-task=14
 #SBATCH -t 01:30:00
 ##SBATCH -q debug
-#SBATCH -J on_m3_tr4_curr
+#SBATCH -J tri_m3_N7
 #SBATCH -o log_%x-%j.out
 #SBATCH --exclusive
 
@@ -16,21 +16,21 @@ date
 PARAVIEW_PATH="/ccs/home/rweardleybrunt/ParaView/ParaView-6.1.0-MPI-Linux-Python3.12-x86_64"
 
 filter_domains=0
-timesteps=(0 1 2 3)
-input_dir="/lustre/orion/fus166/proj-shared/rweb/dat_mhd_on_m3_tr4"
-output_dir="/lustre/orion/fus166/proj-shared/rweb/dat_mhd_on_m3_tr4/resampled_TBM_topBZ"
+timesteps=(0)
+input_dir="/lustre/orion/fus166/proj-shared/rweb/tri_m3_N7"
+output_dir="/lustre/orion/fus166/proj-shared/rweb/tri_m3_N7/resampled_SH_inlet"
 res=1100
-input_bounds="-0.461538,10,-5.63846,5.63846,9.4,14.6846"
+input_bounds="14.25,19.75,-4.75,0.75,-13.95,-8.45"
 
 mkdir -p $output_dir
 
 domains=("pbli"
-         "steel_tbm"
-         "water_tbm")
+         "steel_sh"
+         "water_sh")
 
 for domain in ${domains[@]}; do
-    input_file="${input_dir}/${domain}_currpink3b_tri.nek5000"
-    output_file="${output_dir}/${domain}_curr"
+    input_file="${input_dir}/${domain}_pink.nek5000"
+    output_file="${output_dir}/${domain}"
     for ts_idx in ${timesteps[@]}; do
         echo "[$ts_idx] >>> \bin\bash >>> launching python"
         $PARAVIEW_PATH"/bin/mpiexec" -n $SLURM_NTASKS $PARAVIEW_PATH"/bin/pvbatch"  \

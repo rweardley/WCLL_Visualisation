@@ -19,7 +19,7 @@ filter_domains=0
 timesteps=(0)
 input_dir="/lustre/orion/fus166/proj-shared/rweb/tri_m3_N7"
 output_dir="/lustre/orion/fus166/proj-shared/rweb/tri_m3_N7/resampled_TBM_topBZ"
-res=2000
+res=1100
 input_bounds="-0.461538,10,-5.63846,5.63846,9.4,14.6846"
 
 mkdir -p $output_dir
