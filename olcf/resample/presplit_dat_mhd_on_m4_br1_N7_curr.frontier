@@ -6,7 +6,7 @@
 #SBATCH --cpus-per-task=14
 #SBATCH -t 01:30:00
 #SBATCH -q debug
-#SBATCH -J on_m4_br1_N7
+#SBATCH -J on_m4_br1_N7_curr
 #SBATCH -o log_%x-%j.out
 #SBATCH --exclusive
 
@@ -31,7 +31,7 @@ domains=("pbli"
 
 for domain in ${domains[@]}; do
     input_file="${input_dir}/${domain}_currpink.nek5000"
-    output_file="${output_dir}/${domain}"
+    output_file="${output_dir}/${domain}_curr"
     for ts_idx in ${timesteps[@]}; do
         echo "[$ts_idx] >>> \bin\bash >>> launching python"
         $PARAVIEW_PATH"/bin/mpiexec" -n $SLURM_NTASKS $PARAVIEW_PATH"/bin/pvbatch"  \
