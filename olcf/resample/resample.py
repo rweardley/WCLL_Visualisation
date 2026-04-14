@@ -3,7 +3,7 @@ from paraview.simple import *
 import time
 import gc
 
-def nekrs_resample_to_image(input_file, output_file, full_sampling_dimensions, ts_idx, filter_domains, spectralIDs, domainNames, input_bounds=None):
+def nekrs_resample_to_image(input_file, output_file, full_sampling_dimensions, ts_idx, filter_domains, spectralIDs, domainNames, input_bounds=None, force_specified_input_bounds=False):
 
     t_init = time.time()
 
@@ -86,10 +86,18 @@ def nekrs_resample_to_image(input_file, output_file, full_sampling_dimensions, t
         else:
             if domain == 0:
                 resample = ResampleToImage(Input=nek5000_data)
-                resample.Set(
-                    UseInputBounds=1,
-                    SamplingDimensions=full_sampling_dimensions,
-                )
+                if force_specified_input_bounds:
+                    resample.Set(
+                        UseInputBounds=0,
+                        SamplingBounds=input_bounds,
+                        SamplingDimensions=full_sampling_dimensions,
+                    )
+
+                else:
+                    resample.Set(
+                        UseInputBounds=1,
+                        SamplingDimensions=full_sampling_dimensions,
+                    )
             else:
                 continue
 

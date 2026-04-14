@@ -12,13 +12,14 @@ output_file = str(sys.argv[4])
 print(f"[{ts_idx}] !!! Output file: {output_file}")
 res = int(sys.argv[5])
 print(f"[{ts_idx}] !!! Resolution g: {res}")
+input_bounds = [float(x) for x in sys.argv[6].split(",")] # comma separated string of floats from slurm script
+print(f"[{ts_idx}] !!! Resolution g: {input_bounds}")
 
 spectralIDs = None
 domainNames = ["PRESPLIT"]
 
 # calculate full-domain sampling resolution
 
-input_bounds = [-0.461538, 37.1299, -5.63846, 5.63846, -14.6846, 14.6846]
 input_ranges = [
     abs(input_bounds[1] - input_bounds[0]),
     abs(input_bounds[3] - input_bounds[2]),
@@ -40,4 +41,5 @@ resample.nekrs_resample_to_image(
     spectralIDs,
     domainNames,
     input_bounds,
+    force_specified_input_bounds=True,
 )
