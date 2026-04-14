@@ -13,7 +13,7 @@ print(f"[{ts_idx}] !!! Output file: {output_file}")
 res = int(sys.argv[5])
 print(f"[{ts_idx}] !!! Resolution g: {res}")
 input_bounds = [float(x) for x in sys.argv[6].split(",")] # comma separated string of floats from slurm script
-print(f"[{ts_idx}] !!! Resolution g: {input_bounds}")
+print(f"[{ts_idx}] !!! Input bounds: {input_bounds}")
 
 spectralIDs = None
 domainNames = ["PRESPLIT"]
