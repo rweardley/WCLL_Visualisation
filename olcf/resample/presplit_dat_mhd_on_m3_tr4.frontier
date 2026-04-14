@@ -30,7 +30,7 @@ domains=("pbli"
          "water_tbm")
 
 for domain in ${domains[@]}; do
-    input_file="${input_dir}/${domain}pink3b_tri.nek5000"
+    input_file="${input_dir}/${domain}_pink3b_tri.nek5000"
     output_file="${output_dir}/${domain}"
     for ts_idx in ${timesteps[@]}; do
         echo "[$ts_idx] >>> \bin\bash >>> launching python"
