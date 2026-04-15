@@ -1,0 +1,39 @@
+#!/bin/bash
+#SBATCH -A FUS166
+#SBATCH -p batch
+#SBATCH --nodes=12
+#SBATCH --ntasks-per-node=4
+#SBATCH --cpus-per-task=14
+#SBATCH -t 01:30:00
+##SBATCH -q debug
+#SBATCH -J tri_m3_N5
+#SBATCH -o log_%x-%j.out
+#SBATCH --exclusive
+
+cd $SLURM_SUBMIT_DIR
+date
+
+PARAVIEW_PATH="/ccs/home/rweardleybrunt/ParaView/ParaView-6.1.0-MPI-Linux-Python3.12-x86_64"
+
+filter_domains=0
+timesteps=(0)
+input_dir="/lustre/orion/fus166/proj-shared/rweb/tri_m3_N5"
+output_dir="/lustre/orion/fus166/proj-shared/rweb/tri_m3_N5/resampled_SH_inlet"
+res=1100
+input_bounds="14.25,19.75,-4.75,0.75,-13.95,-8.45"
+
+mkdir -p $output_dir
+
+domains=("pbli"
+         "steel_sh"
+         "water_sh")
+
+for domain in ${domains[@]}; do
+    input_file="${input_dir}/${domain}_pink.nek5000"
+    output_file="${output_dir}/${domain}"
+    for ts_idx in ${timesteps[@]}; do
+        echo "[$ts_idx] >>> \bin\bash >>> launching python"
+        $PARAVIEW_PATH"/bin/mpiexec" -n $SLURM_NTASKS $PARAVIEW_PATH"/bin/pvbatch"  \
+            presplit_resample_focused.py $ts_idx $filter_domains $input_file $output_file $res $input_bounds
+    done
+done
