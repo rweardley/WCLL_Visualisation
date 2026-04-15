@@ -6,7 +6,7 @@
 #SBATCH --cpus-per-task=14
 #SBATCH -t 01:30:00
 ##SBATCH -q debug
-#SBATCH -J off_m3_ar6_N3
+#SBATCH -J on_m3_tr4
 #SBATCH -o log_%x-%j.out
 #SBATCH --exclusive
 
@@ -18,15 +18,14 @@ PARAVIEW_PATH="/ccs/home/rweardleybrunt/ParaView/ParaView-6.1.0-MPI-Linux-Python
 filter_domains=0
 timesteps=(5)
 input_dir="/lustre/orion/fus166/proj-shared/rweb/dat_mhd_off_m3_ar6_N3"
-output_dir="/lustre/orion/fus166/proj-shared/rweb/dat_mhd_off_m3_ar6_N3/resampled"
-res=400
+output_dir="/lustre/orion/fus166/proj-shared/rweb/dat_mhd_off_m3_ar6_N3/resampled_TBM_tophalf"
+res=1000
+input_bounds="-0.461538,14.3,-5.63846,5.63846,-3,14.6846"
 
 mkdir -p $output_dir
 
 domains=("pbli"
-         "steel_sh"
          "steel_tbm"
-         "water_sh"
          "water_tbm")
 
 for domain in ${domains[@]}; do
@@ -35,6 +34,6 @@ for domain in ${domains[@]}; do
     for ts_idx in ${timesteps[@]}; do
         echo "[$ts_idx] >>> \bin\bash >>> launching python"
         $PARAVIEW_PATH"/bin/mpiexec" -n $SLURM_NTASKS $PARAVIEW_PATH"/bin/pvbatch"  \
-            presplit_resample.py $ts_idx $filter_domains $input_file $output_file $res
+            presplit_resample_focused.py $ts_idx $filter_domains $input_file $output_file $res $input_bounds
     done
 done
