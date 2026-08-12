@@ -4,7 +4,7 @@
 #SBATCH -t 01:30:00
 #SBATCH -N 16
 #SBATCH --ntasks-per-node=56
-#SBATCH -J mhd_on_m3_tr4
+#SBATCH -J wk5_m3_no_mhd
 #SBATCH -o log_%x-%j.out
 
 module load cray-python/3.11.7
