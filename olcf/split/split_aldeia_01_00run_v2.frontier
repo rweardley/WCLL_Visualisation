@@ -2,7 +2,7 @@
 #SBATCH -A fus166
 #SBATCH -q debug
 #SBATCH -t 02:00:00
-#SBATCH -N 30
+#SBATCH -N 16
 #SBATCH --ntasks-per-node=56
 #SBATCH -J aldeia_01_00run
 #SBATCH -o log_%x-%j.out
@@ -14,7 +14,7 @@ OUTPUT_DIR="/lustre/orion/fus166/proj-shared/rweb/aldeia/01_ylan_files/00run_v2/
 PINK=1
 MHDPINK=0
 CURRPINK=0
-MESH="m3"
+MESH="m3fl"
 CASENAME="pink3b_act"
 
 srun --cpu-bind=cores --threads-per-core=1 --label python3 split_nek5000.py $SOURCE_DIR $OUTPUT_DIR $PINK $MHDPINK $CURRPINK $MESH $CASENAME
