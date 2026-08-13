@@ -120,7 +120,6 @@ def print_run_info(fdr, case, out_fdr, select_list):
         print("", flush=True)
 
 
-
 def fld_name_from_template(meta, ifile, file_id=0):
     tmpl = meta["file_template"]
     nfmt = tmpl.count("%")
@@ -728,6 +727,18 @@ if __name__ == "__main__":
             "water_sh":   (140869281, 151935592),
             "steel_tbm":  (151935593, 245637464),
             "steel_sh":   (245637465, 257676220),
+        }
+    elif mesh == "m3fl":
+        select_list = {
+            "water_tbm": (1, 21918860),
+            "pbli": (21918861, 91142332),
+            "water_sh": (91142333, 98044916),
+        }
+    elif mesh == "m4fl":
+        select_list = {
+            "water_tbm": (1, 38733372),
+            "pbli": (38733373, 140869280),
+            "water_sh": (140869281, 151935592),
         }
 
     if case_pink:
