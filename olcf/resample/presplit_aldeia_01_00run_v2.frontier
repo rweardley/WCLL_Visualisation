@@ -16,7 +16,7 @@ date
 PARAVIEW_PATH="/ccs/home/rweardleybrunt/ParaView/ParaView-6.1.0-MPI-Linux-Python3.12-x86_64"
 
 filter_domains=0
-timesteps=($(seq 0 1 22))
+timesteps=($(seq 0 1 22)) # change this when I know how many steps we have
 input_dir="/lustre/orion/fus166/proj-shared/rweb/aldeia/01_ylan_files/00run/"
 output_dir="/lustre/orion/fus166/proj-shared/rweb/aldeia/01_ylan_files/00run/resampled"
 res=100
@@ -25,8 +25,6 @@ casename="pink3b_act"
 mkdir -p $output_dir
 
 domains=("pbli"
-         "steel_sh"
-         "steel_tbm"
          "water_sh"
          "water_tbm")
 
