@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -A fus166
-#SBATCH -q debug
+##SBATCH -q debug
 #SBATCH -t 02:00:00
 #SBATCH -N 16
 #SBATCH --ntasks-per-node=56
@@ -12,8 +12,8 @@ module load cray-python/3.11.7
 SOURCE_DIR="/lustre/orion/fus166/proj-shared/rweb/gb_final/buo0_mhd1_mc1/"
 OUTPUT_DIR="/lustre/orion/fus166/proj-shared/rweb/gb_final/buo0_mhd1_mc1/"
 PINK=1
-MHDPINK=0
-CURRPINK=0
+MHDPINK=1
+CURRPINK=1
 MESH="m3"
 CASENAME="pink5m3_mhd_no_buo"
 
