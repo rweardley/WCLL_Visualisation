@@ -4,6 +4,10 @@ OUTPUT_DIR="/lustre/orion/fus166/proj-shared/rweb/gb_final/buo0_mhd1_mc1/"
 CASENAME="pink5m3_mhd_no_buo"
 CHECKPOINT=00034
 
+if [ ! -d "$OUTPUT_DIR" ]; then
+    mkdir -p $OUTPUT_DIR
+fi
+
 echo "SOURCE_DIR=$SOURCE_DIR" > $OUTPUT_DIR/log.link
 echo "CHECKPOINT=$CHECKPOINT" >> $OUTPUT_DIR/log.link
 
