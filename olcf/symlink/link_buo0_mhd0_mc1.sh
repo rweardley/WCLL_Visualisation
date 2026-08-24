@@ -6,4 +6,4 @@ CHECKPOINT=00058
 
 ln -sf $SOURCE_DIR/${CASENAME}0.f${CHECKPOINT} $OUTPUT_DIR/${CASENAME}0.f00000
 cp $SOURCE_DIR/${CASENAME}.nek5000 $OUTPUT_DIR
-sed -i 's/^numtimesteps:.*/numtimesteps: 1/' ${CASENAME}.nek5000
+sed -i 's/^numtimesteps:.*/numtimesteps: 1/' $OUTPUT_DIR/${CASENAME}.nek5000
