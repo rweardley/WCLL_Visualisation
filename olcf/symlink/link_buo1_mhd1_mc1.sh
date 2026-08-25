@@ -11,14 +11,17 @@ fi
 echo "SOURCE_DIR=$SOURCE_DIR" > $OUTPUT_DIR/log.link
 echo "CHECKPOINT=$CHECKPOINT" >> $OUTPUT_DIR/log.link
 
-ln -sf $SOURCE_DIR/${CASENAME}0.f${CHECKPOINT} $OUTPUT_DIR/${CASENAME}0.f00000
+ln -sf $SOURCE_DIR/${CASENAME}0.f00000 $OUTPUT_DIR/${CASENAME}0.f00000
+ln -sf $SOURCE_DIR/${CASENAME}0.f${CHECKPOINT} $OUTPUT_DIR/${CASENAME}0.f00001
 cp $SOURCE_DIR/${CASENAME}.nek5000 $OUTPUT_DIR
-sed -i 's/^numtimesteps:.*/numtimesteps: 1/' $OUTPUT_DIR/${CASENAME}.nek5000
+sed -i 's/^numtimesteps:.*/numtimesteps: 2/' $OUTPUT_DIR/${CASENAME}.nek5000
 
-ln -sf $SOURCE_DIR/mhd${CASENAME}0.f${CHECKPOINT} $OUTPUT_DIR/mhd${CASENAME}0.f00000
+ln -sf $SOURCE_DIR/mhd${CASENAME}0.f00000 $OUTPUT_DIR/mhd${CASENAME}0.f00000
+ln -sf $SOURCE_DIR/mhd${CASENAME}0.f${CHECKPOINT} $OUTPUT_DIR/mhd${CASENAME}0.f00001
 cp $SOURCE_DIR/mhd${CASENAME}.nek5000 $OUTPUT_DIR
-sed -i 's/^numtimesteps:.*/numtimesteps: 1/' $OUTPUT_DIR/mhd${CASENAME}.nek5000
+sed -i 's/^numtimesteps:.*/numtimesteps: 2/' $OUTPUT_DIR/mhd${CASENAME}.nek5000
 
-ln -sf $SOURCE_DIR/curr${CASENAME}0.f${CHECKPOINT} $OUTPUT_DIR/curr${CASENAME}0.f00000
+ln -sf $SOURCE_DIR/curr${CASENAME}0.f00000 $OUTPUT_DIR/curr${CASENAME}0.f00000
+ln -sf $SOURCE_DIR/curr${CASENAME}0.f${CHECKPOINT} $OUTPUT_DIR/curr${CASENAME}0.f00001
 cp $SOURCE_DIR/curr${CASENAME}.nek5000 $OUTPUT_DIR
-sed -i 's/^numtimesteps:.*/numtimesteps: 1/' $OUTPUT_DIR/curr${CASENAME}.nek5000
+sed -i 's/^numtimesteps:.*/numtimesteps: 2/' $OUTPUT_DIR/curr${CASENAME}.nek5000
