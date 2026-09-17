@@ -50,6 +50,7 @@ create_checkpoint_links() {
                 echo $base "->" $newbase
 
                 # ln -sf "$(realpath "$src")" "$   ((batch++))
+            done
         done
     done
 }
