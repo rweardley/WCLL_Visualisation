@@ -18,5 +18,7 @@ for rundir in ${casedir}/[0-9][0-9]run; do
 
     endtime=$(awk '/t=/ {t=$3} END{print t}' "$logfile")
 
-    printf "%s\t%s\n" "$run" "$endtime" >> "$outfile"
+    checkpoints=$(ls "$rundir"/*0.f* | wc -l)
+
+    printf "%s\t%s\t%s\n" "$run" "$endtime" "$checkpoints" >> "$outfile"
 done
