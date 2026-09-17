@@ -7,7 +7,7 @@ parse_logs () {
     checkpoint_prefix=$4
 
     # Header
-    printf "run\tendtime\n" > "$outfile"
+    printf "run\tstarttime\tendtime\tcheckpoints\n" > "$outfile"
 
     for rundir in ${casedir}/[0-9][0-9]run; do
         echo $rundir
@@ -18,11 +18,12 @@ parse_logs () {
         logfile=$(ls "$rundir"/${logfile_prefix}*.out 2>/dev/null | head -n1)
         [[ -f "$logfile" ]] || continue
 
+        starttime=$(awk '/START TIME/ {print $NF; exit}' "$logfile")
         endtime=$(awk '/t=/ {t=$3} END{print t}' "$logfile")
 
         checkpoints=$(ls "$rundir"/${checkpoint_prefix}*0.f* | wc -l)
 
-        printf "%s\t%s\t%s\n" "$run" "$endtime" "$checkpoints" >> "$outfile"
+        printf "%s\t%s\t%s\t%s\n" "$run" "$starttime" "$endtime" "$checkpoints" >> "$outfile"
     done
 }
 
