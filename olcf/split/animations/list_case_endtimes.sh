@@ -4,6 +4,7 @@ parse_logs () {
     casedir=$1
     outfile=$2
     logfile_prefix=$3
+    checkpoint_prefix=$4
 
     # Header
     printf "run\tendtime\n" > "$outfile"
@@ -19,7 +20,7 @@ parse_logs () {
 
         endtime=$(awk '/t=/ {t=$3} END{print t}' "$logfile")
 
-        checkpoints=$(ls "$rundir"/*0.f* | wc -l)
+        checkpoints=$(ls "$rundir"/${checkpoint_prefix}*0.f* | wc -l)
 
         printf "%s\t%s\t%s\n" "$run" "$endtime" "$checkpoints" >> "$outfile"
     done
@@ -30,5 +31,15 @@ parse_logs () {
 casedir="/lustre/orion/nfu106/proj-shared/gottems/GB26_finalist/03_m3_no_buo/03_m3_no_buo"
 outfile="endtimes_buo0_mhd0_mc1.tsv"
 logfile_prefix="nekRS_pink"
+checkpoint_prefix=""
 
-parse_logs $casedir $outfile $logfile_prefix
+parse_logs $casedir $outfile $logfile_prefix $checkpoint_prefix
+
+# buo0_mhd1_mc1
+
+casedir="/lustre/orion/proj-shared/nfu106/dalinger/inputs/lm-mhd/2.1-nekrs/05_m3_mhd_no_buo"
+outfile="endtimes_buo0_mhd1_mc1.tsv"
+logfile_prefix="nekRS_pink"
+checkpoint_prefix="pink"
+
+parse_logs $casedir $outfile $logfile_prefix $checkpoint_prefix
