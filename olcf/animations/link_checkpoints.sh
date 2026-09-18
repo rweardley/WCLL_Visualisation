@@ -16,8 +16,8 @@ set -euo pipefail
 
 # ---------------------------------------------------------------- defaults ---
 batch_size=20
-input_dir="/lustre/orion/nfu106/proj-shared/gottems/GB26_finalist/03_m3_no_buo/03_m3_no_buo"
-output_dir="/lustre/orion/fus166/proj-shared/rweb/gb_final/animation/buo0_mhd0_mc1/"
+input_dir="."
+output_dir="./checkpoint_links"
 prefix=""
 run_start=0
 run_end=18
@@ -89,6 +89,43 @@ run() {  # execute, or just echo under --dry-run
         printf '  [dry-run] %s\n' "$*"
     else
         "$@"
+    fi
+}
+
+# write_metadata <batch-dir> <field-prefix> <n-timesteps> <run-dir>
+#
+# Produces <casename>.nek5000 inside the batch directory, where <casename> is
+# the field prefix with its trailing output-index digit removed, e.g. field
+# files "pink5m3_no_buo0.f00000" -> "pink5m3_no_buo.nek5000".  If the source
+# run directory already has a .nek5000, it is copied and its firsttimestep /
+# numtimesteps lines rewritten, so any other fields it carries are preserved.
+write_metadata() {
+    local batch_dir="$1" fprefix="$2" n_ts="$3" src_dir="$4"
+    local casename="${fprefix%0}" src meta
+
+    if [[ "$casename" == "$fprefix" ]]; then
+        warn "field prefix '$fprefix' does not end in an output index digit;" \
+             "using it verbatim in the file template"
+    fi
+
+    meta="$batch_dir/${casename}.nek5000"
+    src="$src_dir/${casename}.nek5000"
+
+    if [[ $dry_run -eq 1 ]]; then
+        printf '  [dry-run] write %s (numtimesteps: %d)\n' "$meta" "$n_ts"
+        return
+    fi
+
+    if [[ -f "$src" ]]; then
+        cp "$src" "$meta"
+        sed -i -e 's/^firsttimestep:.*/firsttimestep: 0/' \
+               -e "s/^numtimesteps:.*/numtimesteps: $n_ts/" "$meta"
+    else
+        cat > "$meta" <<EOF
+filetemplate: ${casename}%01d.f%05d
+firsttimestep: 0
+numtimesteps: $n_ts
+EOF
     fi
 }
 
@@ -195,6 +232,9 @@ for run_name in "${runs[@]}"; do
             idx=$((idx + 1))
             total_links=$((total_links + 1))
         done
+
+        # 3. the .nek5000 metadata file: idx == mesh link + batch links
+        write_metadata "$batch_dir" "$run_prefix" "$idx" "$run_dir"
 
         printf '  %-16s %s -> %s  (%d checkpoints)\n' \
             "${run_name}_$((b + 1))" "${data[b * batch_size]}" \
