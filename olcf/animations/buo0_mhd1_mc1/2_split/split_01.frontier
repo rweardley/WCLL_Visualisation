@@ -3,9 +3,9 @@
 #SBATCH -t 02:00:00
 #SBATCH -N 16
 #SBATCH --ntasks-per-node=56
-#SBATCH -J mhd1_split02
+#SBATCH -J mhd1_split01
 #SBATCH -o log_%x-%j.out
-#SBATCH --array=1-3:1
+#SBATCH --array=1-2:1
 
 module load cray-python/3.11.7
 
