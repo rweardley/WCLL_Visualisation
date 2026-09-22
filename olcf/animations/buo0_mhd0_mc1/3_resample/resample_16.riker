@@ -16,9 +16,6 @@ date
 module load paraview/6.1.1-mpi
 export UCX_NET_DEVICES=mlx5_0:1
 PARAVIEW_PATH=$OLCF_PARAVIEW_ROOT
-#PARAVIEW_PATH="/ccs/home/rweardleybrunt/ParaView/ParaView-6.1.0-MPI-Linux-Python3.12-x86_64"
-
-#export LD_LIBRARY_PATH=/usr/mpi/gcc/openmpi-4.1.9a1/lib64:$LD_LIBRARY_PATH
 
 RUN=16
 
@@ -48,7 +45,6 @@ for domain in ${domains[@]}; do
     output_file="${output_dir}/${domain}"
     for ts_idx in ${timesteps[@]}; do
         echo "[$ts_idx] >>> \bin\bash >>> launching python"
-#        mpirun -n $SLURM_NTASKS $PARAVIEW_PATH"/bin/pvbatch"  \
         srun -n $SLURM_NTASKS -c 1 $PARAVIEW_PATH"/bin/pvbatch"  \
             ../../../resample/presplit_resample.py $ts_idx $filter_domains $input_file $output_file $res
     done
