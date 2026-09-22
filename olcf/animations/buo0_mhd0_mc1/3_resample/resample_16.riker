@@ -5,7 +5,6 @@
 #SBATCH --nodes=8
 #SBATCH --ntasks-per-node=4
 #SBATCH --cpus-per-task=32
-##SBATCH -q debug
 #SBATCH -J mhd0_rsmpl16
 #SBATCH -o log_%x-%j.out
 #SBATCH --exclusive
