@@ -20,7 +20,7 @@ RUN=16
 filter_domains=0
 
 input_dir="/lustre/orion/fus166/proj-shared/rweb/gb_final/animation/buo0_mhd0_mc1/${RUN}run_${SLURM_ARRAY_TASK_ID}"
-output_dir="/lustre/orion/fus166/proj-shared/rweb/gb_final/animation/buo0_mhd0_mc1/${RUN}run_${SLURM_ARRAY_TASK_ID}/resampled"
+output_dir="/lustre/orion/fus166/proj-shared/rweb/gb_final/animation/buo0_mhd0_mc1/resampled/${RUN}run_${SLURM_ARRAY_TASK_ID}"
 res=400
 casename="pink5m3_no_buo"
 
