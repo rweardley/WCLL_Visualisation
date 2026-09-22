@@ -25,7 +25,7 @@ else
 fi
 
 # Activate environment
-# (only works when you run: source setup_env.sh)
+# (only works when you run: source create_riker_venv.sh)
 source "$ENV_DIR/bin/activate"
 
 echo "Environment active: $(python -c 'import sys; print(sys.executable)')"
