@@ -1,0 +1,51 @@
+#!/bin/bash
+#SBATCH -A FUS166
+#SBATCH -p batch
+#SBATCH -t 02:00:00
+#SBATCH --nodes=8
+#SBATCH --ntasks-per-node=128
+#SBATCH --cpus-per-task=1
+#SBATCH -J mhd1_rsmpl02
+#SBATCH -o log_%x-%j.out
+#SBATCH --exclusive
+#SBATCH --array=1-2:1
+
+cd $SLURM_SUBMIT_DIR
+date
+
+module load paraview/6.1.1-mpi
+export UCX_NET_DEVICES=mlx5_0:1
+PARAVIEW_PATH=$OLCF_PARAVIEW_ROOT
+
+RUN=02
+
+filter_domains=0
+
+input_dir="/lustre/orion/fus166/proj-shared/rweb/gb_final/animation/buo0_mhd1_mc1/${RUN}run_${SLURM_ARRAY_TASK_ID}"
+output_dir="/lustre/orion/fus166/proj-shared/rweb/gb_final/animation/buo0_mhd1_mc1/resampled/${RUN}run_${SLURM_ARRAY_TASK_ID}"
+res=400
+casename="pink5m3_mhd_no_buo"
+
+# get list of checkpoints to use as paraview timesteps
+
+timesteps=( $(ls ${input_dir}/*.f[0-9][0-9][0-9][0-9][0-9] | sed 's/.*\.f//' | sort -un | awk '{sub(/^0+/,""); if ($0=="") $0="0"} 1') )
+
+if [[ ${SLURM_ARRAY_TASK_ID} -ne 1 ]]; then
+    timesteps=( "${timesteps[@]:1}" )   # first batch keeps 0, later batches drop it
+fi
+
+mkdir -p $output_dir
+
+domains=("pbli"
+         "water_sh"
+         "water_tbm")
+
+for domain in ${domains[@]}; do
+    input_file="${input_dir}/${domain}_${casename}.nek5000"
+    output_file="${output_dir}/${domain}"
+    for ts_idx in ${timesteps[@]}; do
+        echo "[$ts_idx] >>> \bin\bash >>> launching python"
+        srun -n $SLURM_NTASKS -c 1 $PARAVIEW_PATH"/bin/pvbatch"  \
+            ../../../resample/presplit_resample.py $ts_idx $filter_domains $input_file $output_file $res
+    done
+done
