@@ -3,8 +3,8 @@
 #SBATCH -p batch
 #SBATCH -t 02:00:00
 #SBATCH --nodes=8
-#SBATCH --ntasks-per-node=4
-#SBATCH --cpus-per-task=32
+#SBATCH --ntasks-per-node=16
+#SBATCH --cpus-per-task=8
 #SBATCH -J mhd0_rsmpl16
 #SBATCH -o log_%x-%j.out
 #SBATCH --exclusive
