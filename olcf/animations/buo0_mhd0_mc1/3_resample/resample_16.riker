@@ -16,7 +16,7 @@ date
 
 PARAVIEW_PATH="/ccs/home/rweardleybrunt/ParaView/ParaView-6.1.0-MPI-Linux-Python3.12-x86_64"
 
-RUN=18
+RUN=16
 
 filter_domains=0
 
