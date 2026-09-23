@@ -3,13 +3,9 @@
 #SBATCH -p gpu
 #SBATCH -t 02:00:00
 #SBATCH --nodes=1
-##SBATCH --gpus=2
 #SBATCH --gpus=1
 #SBATCH --ntasks-per-node=1
-##SBATCH --cpus-per-task=64
-##SBATCH --ntasks-per-node=64
-##SBATCH --cpus-per-task=1
-#SBATCH --cpus-per-gpu=32
+#SBATCH --cpus-per-gpu=16
 #SBATCH -J mhd0_rdr16
 #SBATCH -o log_%x-%j.out
 ##SBATCH --exclusive
@@ -24,11 +20,9 @@ export UCX_NET_DEVICES=mlx5_0:1
 RUN=16
 
 input_dir="/lustre/orion/fus166/proj-shared/rweb/gb_final/animation/buo0_mhd0_mc1/resampled/${RUN}run_${SLURM_ARRAY_TASK_ID}"
-output_dir="/lustre/orion/fus166/proj-shared/rweb/gb_final/animation/buo0_mhd0_mc1/vol_fluids_velocity_all_jet_split/${RUN}run_4"
+output_dir="/lustre/orion/fus166/proj-shared/rweb/gb_final/animation/buo0_mhd0_mc1/vol_fluids_velocity_all_jet_split/${RUN}run_${SLURM_ARRAY_TASK_ID}"
 
 state_file="../../vol_fluids_velocity_all_jet_split.pvsm"
 cad_path="${HOME}/CAD/WCLL/solid_vols_vis.stl"
 
-#pvbatch --force-offscreen-rendering --opengl-window-backend=EGL --displays=0 ../../render_dataset.py $state_file $input_dir $cad_path $output_dir
 pvbatch --force-offscreen-rendering --opengl-window-backend=EGL ../../render_dataset.py $state_file $input_dir $cad_path $output_dir
-#srun pvbatch --mpi --force-offscreen-rendering --opengl-window-backend=EGL ../../render_dataset.py $state_file $input_dir $cad_path $output_dir
