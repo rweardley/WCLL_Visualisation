@@ -3,8 +3,8 @@
 #SBATCH -p gpu
 #SBATCH -t 02:00:00
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=128
-#SBATCH --cpus-per-task=1
+#SBATCH --ntasks-per-node=2
+#SBATCH --cpus-per-task=32
 #SBATCH -J mhd0_rdr16
 #SBATCH -o log_%x-%j.out
 #SBATCH --exclusive
@@ -23,8 +23,8 @@ input_dir="/lustre/orion/fus166/proj-shared/rweb/gb_final/animation/buo0_mhd0_mc
 output_dir="/lustre/orion/fus166/proj-shared/rweb/gb_final/animation/buo0_mhd0_mc1/vol_fluids_velocity_all_jet_split/${RUN}run_4"
 
 state_file="../../vol_fluids_velocity_all_jet_split.pvsm"
-
+cad_path="${HOME}/CAD/WCLL/solid_vols_vis.stl"
 
 mkdir -p $output_dir
 
-pvbatch ../../render_dataset.py $state_file $input_dir $output_dir
+srun -n $SLURM_NTASKS pvbatch ../../render_dataset.py $state_file $input_dir $cad_path $output_dir
