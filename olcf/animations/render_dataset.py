@@ -1,9 +1,27 @@
-import sys, glob, re, os
+import sys, glob, re, os, time
+from datetime import timedelta
 from paraview.simple import *
+from paraview import servermanager
 
 state_file, data_dir, mesh_path, out_dir = sys.argv[1:5]
 
-LoadState(state_file)  # no data_directory - we'll set every reader explicitly
+# --- rank detection (for when this runs under mpirun/srun) ---
+pm = servermanager.vtkProcessModule.GetProcessModule()
+rank = pm.GetPartitionId()
+
+t_start = time.time()
+
+
+def log(msg):
+    if rank == 0:
+        elapsed = timedelta(seconds=int(time.time() - t_start))
+        print(f"[{elapsed}] {msg}", flush=True)
+
+
+log(f"Starting: state={state_file} data_dir={data_dir} mesh={mesh_path}")
+
+LoadState(state_file)
+log("State loaded")
 
 
 def natural_key(s):
@@ -36,18 +54,51 @@ for (name, sid), proxy in GetSources().items():
         proxy.FileName = series
         proxy.UpdatePipelineInformation()
         pvti_readers.append((name, proxy))
+        log(
+            f"Reader '{name}': found {len(series)} files matching '{prefix}*{ext}'"
+        )
 
     elif cls == "STLReader":
         proxy.FileNames = [mesh_path]
         proxy.UpdatePipelineInformation()
+        log(f"STL reader '{name}' set to {mesh_path}")
 
 # sanity check: all three series should agree on frame count
 counts = {name: len(p.TimestepValues) for name, p in pvti_readers}
 if len(set(counts.values())) > 1:
-    print(f"WARNING: mismatched timestep counts across readers: {counts}")
+    log(f"WARNING: mismatched timestep counts across readers: {counts}")
+else:
+    log(f"Timestep counts match across readers: {counts}")
 
 scene = GetAnimationScene()
 scene.UpdateAnimationUsingDataTimeSteps()
 
 view = GetActiveView()
-SaveAnimation(f"{out_dir}/frame_.png", view, ImageResolution=[1920, 1080])
+
+timesteps = list(scene.TimeKeeper.TimestepValues)
+nframes = len(timesteps)
+log(f"Animation set up: {nframes} frames to render")
+
+os.makedirs(out_dir, exist_ok=True)
+
+# view.ViewSize = [1920, 1080]
+
+frame_start = time.time()
+for i, t in enumerate(timesteps):
+    f0 = time.time()
+
+    scene.TimeKeeper.Time = t
+    SaveScreenshot(
+        os.path.join(out_dir, f"frame_{i:04d}.png"),
+        view,
+        ImageResolution=[1920, 1080],
+    )
+
+    frame_time = time.time() - f0
+    avg = (time.time() - frame_start) / (i + 1)
+    remaining = timedelta(seconds=int(avg * (nframes - i - 1)))
+    log(
+        f"Frame {i+1}/{nframes} done (t={t:.4g}, {frame_time:.1f}s, ETA {remaining})"
+    )
+
+log(f"All done. Total time: {timedelta(seconds=int(time.time() - t_start))}")
