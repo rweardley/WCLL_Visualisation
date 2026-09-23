@@ -6,7 +6,7 @@
 #SBATCH --gpus=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-gpu=16
-#SBATCH -J mhd0_rdr16
+#SBATCH -J mhd0_rdr13
 #SBATCH -o log_%x-%j.out
 #SBATCH --array=1-4:1
 
@@ -16,7 +16,7 @@ date
 module load paraview/6.1.1-gpu-mpi
 export UCX_NET_DEVICES=mlx5_0:1
 
-RUN=16
+RUN=13
 
 input_dir="/lustre/orion/fus166/proj-shared/rweb/gb_final/animation/buo0_mhd0_mc1/resampled/${RUN}run_${SLURM_ARRAY_TASK_ID}"
 output_dir="/lustre/orion/fus166/proj-shared/rweb/gb_final/animation/buo0_mhd0_mc1/vol_fluids_velocity_all_jet_split/${RUN}run_${SLURM_ARRAY_TASK_ID}"
