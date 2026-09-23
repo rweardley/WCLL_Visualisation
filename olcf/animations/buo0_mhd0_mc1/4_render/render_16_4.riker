@@ -25,6 +25,4 @@ output_dir="/lustre/orion/fus166/proj-shared/rweb/gb_final/animation/buo0_mhd0_m
 state_file="../../vol_fluids_velocity_all_jet_split.pvsm"
 cad_path="${HOME}/CAD/WCLL/solid_vols_vis.stl"
 
-mkdir -p $output_dir
-
 srun -n $SLURM_NTASKS pvbatch ../../render_dataset.py $state_file $input_dir $cad_path $output_dir
