@@ -3,12 +3,13 @@
 #SBATCH -p gpu
 #SBATCH -t 02:00:00
 #SBATCH --nodes=1
-#SBATCH --gpus=1
-#SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-gpu=16
+#SBATCH --gpus=2
+#SBATCH --ntasks-per-node=2
+#SBATCH --cpus-per-gpu=32
 #SBATCH -J mhd0_rdr14
 #SBATCH -o log_%x-%j.out
 #SBATCH --array=1-4:1
+#SBATCH --exclusive
 
 cd $SLURM_SUBMIT_DIR
 date
