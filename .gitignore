@@ -2,3 +2,4 @@ slurm-*
 log_*
 __pycache__
 *.tsv
+*.png
