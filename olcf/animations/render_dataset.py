@@ -81,8 +81,6 @@ log(f"Animation set up: {nframes} frames to render")
 
 os.makedirs(out_dir, exist_ok=True)
 
-# view.ViewSize = [1920, 1080]
-
 frame_start = time.time()
 for i, t in enumerate(timesteps):
     f0 = time.time()
