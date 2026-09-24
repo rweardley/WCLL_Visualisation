@@ -3,3 +3,4 @@ log_*
 __pycache__
 *.tsv
 *.png
+*.mp4

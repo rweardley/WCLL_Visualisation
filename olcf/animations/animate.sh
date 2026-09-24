@@ -26,7 +26,7 @@ SETUP1_VIS="vol_fluids_velocity_all_jet_split"
 #
 #     XXrun_Y
 #
-SETUP1_XX=(15 16)
+SETUP1_XX=(13 14 15 16)
 
 
 # ============================================================================
