@@ -9,43 +9,91 @@ set -euo pipefail
 # Base directory containing the setup directories.
 BASE_DIR=`pwd`
 
-# Setup 1
-SETUP1="buo0_mhd0_mc1"
-VIS1="vol_fluids_velocity_all_jet_split"
 
-# XX values to include from each setup.
+# ============================================================================
+# SETUP 1
+# ============================================================================
+
+# Name of setup1 directory.
+SETUP1="buo0_mhd0_mc1"
+
+# Name of visualisation directory inside setup1.
+SETUP1_VIS="vol_fluids_velocity_all_jet_split"
+
+# XX values to include from setup1.
 #
 # setup1 directories have the form:
+#
 #     XXrun_Y
 #
-# XX values are specified as integers here; the script handles the
-# zero-padding in the directory names.
 SETUP1_XX=(15 16)
 
-# Setup 2
+
+# ============================================================================
+# SETUP 2
+# ============================================================================
+
+# Name of setup2 directory.
 #
-# Set SETUP2="" if setup2 is not currently available.
+# Set this to "" if setup2 is not currently available.
 #
-# setup2 directories have the form:
-#     XXrunY
 # SETUP2="buo0_mhd1_mc1"
 SETUP2=""
-VIS2=$VIS1
+
+# Name of visualisation directory inside setup2.
+SETUP2_VIS=$SETUP1_VIS
 
 # XX values to include from setup2.
+#
+# setup2 directories have the form:
+#
+#     XXrunY
+#
 SETUP2_XX=()
+
+
+# ============================================================================
+# FRAMES TO SKIP
+# ============================================================================
+
+# Individual frames that should NOT be included in the animation.
+#
+# Paths can be either:
+#
+#   1. Relative to BASE_DIR
+#
+#      "setup1/vol/14run_1/frame_0012.png"
+#
+#   2. Absolute
+#
+#      "/path/to/data/setup1/vol/14run_1/frame_0012.png"
+#
+# You can add as many frames as necessary.
+#
+SKIP_FRAMES=(
+    "buo0_mhd0_mc1/vol_fluids_velocity_all_jet_split/15run_1/frame_0013.png"
+)
+
+
+# ============================================================================
+# OUTPUT
+# ============================================================================
 
 # Output animation.
 #
 # The format is determined by the filename extension.
+#
 # Examples:
+#
 #     animation.mp4
 #     animation.webm
 #     animation.mkv
+#
 OUTPUT="animation.mp4"
 
 # Frame rate in frames per second.
-FPS=12
+FPS=24
+
 
 ###############################################################################
 # END OF USER CONFIGURATION
@@ -77,8 +125,12 @@ if ! [[ "$FPS" =~ ^[0-9]+([.][0-9]+)?$ ]] ||
     exit 1
 fi
 
-SETUP1_PATH="${BASE_DIR}/${SETUP1}/${VIS1}"
-SETUP2_PATH="${BASE_DIR}/${SETUP2}/${VIS2}"
+
+###############################################################################
+# SETUP PATHS
+###############################################################################
+
+SETUP1_PATH="${BASE_DIR}/${SETUP1}/${SETUP1_VIS}"
 
 if [[ ! -d "$SETUP1_PATH" ]]; then
     echo "Error: setup1 directory does not exist:" >&2
@@ -86,15 +138,18 @@ if [[ ! -d "$SETUP1_PATH" ]]; then
     exit 1
 fi
 
+
 # setup2 is optional.
 if [[ -n "$SETUP2" ]]; then
-    SETUP2_PATH="${BASE_DIR}/${SETUP2}/${VOL2}"
+
+    SETUP2_PATH="${BASE_DIR}/${SETUP2}/${SETUP2_VIS}"
 
     if [[ ! -d "$SETUP2_PATH" ]]; then
         echo "Error: setup2 directory does not exist:" >&2
         echo "  $SETUP2_PATH" >&2
         exit 1
     fi
+
 fi
 
 
@@ -112,14 +167,62 @@ trap cleanup EXIT
 
 
 ###############################################################################
-# HELPER FUNCTIONS
+# FRAME SKIP CHECK
 ###############################################################################
 
-# Escape a filename for use in an FFmpeg concat-demuxer file.
+should_skip_frame() {
+    local frame="$1"
+    local skip
+    local skip_path
+
+    for skip in "${SKIP_FRAMES[@]}"; do
+
+        # Ignore empty entries.
+        [[ -z "$skip" ]] && continue
+
+        # Convert relative skip paths into absolute paths.
+        if [[ "$skip" = /* ]]; then
+            skip_path="$skip"
+        else
+            skip_path="${BASE_DIR}/${skip}"
+        fi
+
+        # Compare canonical absolute paths.
+        #
+        # realpath is preferable because it handles things such as:
+        #   ./foo
+        #   ../foo
+        #   duplicate slashes
+        #
+        # If realpath isn't available, fall back to the literal paths.
+        if command -v realpath >/dev/null 2>&1; then
+
+            if [[ "$(realpath "$frame")" == "$(realpath -m "$skip_path")" ]]; then
+                return 0
+            fi
+
+        else
+
+            if [[ "$frame" == "$skip_path" ]]; then
+                return 0
+            fi
+
+        fi
+
+    done
+
+    return 1
+}
+
+
+###############################################################################
+# ESCAPE PATH FOR FFMPEG
+###############################################################################
+
 escape_for_ffmpeg() {
     local path="$1"
 
-    # Escape single quotes.
+    # Escape single quotes for the FFmpeg concat demuxer.
     path="${path//\'/\'\\\'\'}"
 
     printf "'%s'" "$path"
@@ -138,11 +241,10 @@ add_run_frames() {
     local frame
     local duration
 
-    # Find PNG files matching:
-    #
-    #     frame_ZZZZ.png
-    #
-    # where ZZZZ consists of exactly four digits.
+    ###########################################################################
+    # FIND FRAMES
+    ###########################################################################
+
     while IFS= read -r -d '' frame; do
         frames+=("$frame")
     done < <(
@@ -160,10 +262,11 @@ add_run_frames() {
         return
     fi
 
-    # Sort frames numerically by ZZZZ.
-    #
-    # This is deliberately numeric rather than relying on ordinary
-    # alphabetical sorting.
+
+    ###########################################################################
+    # SORT FRAMES NUMERICALLY
+    ###########################################################################
+
     mapfile -t frames < <(
         printf '%s\n' "${frames[@]}" |
         awk -F'frame_|\\.png' '{ print $2 "\t" $0 }' |
@@ -171,12 +274,29 @@ add_run_frames() {
         cut -f2-
     )
 
-    # Duration of each frame.
+
+    ###########################################################################
+    # FRAME DURATION
+    ###########################################################################
+
     duration=$(awk "BEGIN { printf \"%.12f\", 1/$fps }")
 
+
+    ###########################################################################
+    # ADD FRAMES
+    ###########################################################################
+
     for frame in "${frames[@]}"; do
+
+        # Check whether this frame has been manually excluded.
+        if should_skip_frame "$frame"; then
+            echo "Skipping: $frame" >&2
+            continue
+        fi
+
         printf "file %s\n" "$(escape_for_ffmpeg "$frame")" >> "$CONCAT_FILE"
         printf "duration %s\n" "$duration" >> "$CONCAT_FILE"
+
     done
 }
 
@@ -202,42 +322,65 @@ process_setup() {
 
     local run_dirs=()
 
+
+    ###########################################################################
+    # PROCESS EACH XX
+    ###########################################################################
+
     for xx in "${xx_values[@]}"; do
 
-        # XX must be two digits in the directory name.
+        # XX is always two digits in the directory name.
         #
-        # For example:
-        #   4  -> 04
-        #   14 -> 14
-        #   25 -> 25
+        # Examples:
+        #
+        #     4  -> 04
+        #     14 -> 14
+        #     25 -> 25
+        #
         printf -v xx_padded '%02d' "$xx"
 
+
+        #######################################################################
+        # DIRECTORY PATTERN
+        #######################################################################
+
         if [[ "$naming_style" == "underscore" ]]; then
+
             # setup1:
+            #
             #     XXrun_Y
+            #
             pattern="${xx_padded}run_"*
+
         else
+
             # setup2:
+            #
             #     XXrunY
+            #
             pattern="${xx_padded}run"*
+
         fi
+
 
         run_dirs=()
 
+
         #######################################################################
-        # FIND ALL RUN DIRECTORIES FOR THIS XX
+        # FIND ALL RUN DIRECTORIES
         #######################################################################
 
         while IFS= read -r -d '' run_dir; do
 
             basename=$(basename "$run_dir")
 
+
             if [[ "$naming_style" == "underscore" ]]; then
 
                 # Expected:
+                #
                 #     XXrun_Y
                 #
-                # Capture Y.
                 if [[ "$basename" =~ ^${xx_padded}run_([0-9]+)$ ]]; then
                     y="${BASH_REMATCH[1]}"
                 else
@@ -247,9 +390,9 @@ process_setup() {
             else
 
                 # Expected:
+                #
                 #     XXrunY
                 #
-                # Capture Y.
                 if [[ "$basename" =~ ^${xx_padded}run([0-9]+)$ ]]; then
                     y="${BASH_REMATCH[1]}"
                 else
@@ -258,9 +401,12 @@ process_setup() {
 
             fi
 
-            # Store Y together with the directory so that it can be
-            # numerically sorted.
+
+            # Store Y alongside the directory.
+            #
+            # This allows us to sort numerically by Y.
             run_dirs+=("${y}"$'\t'"${run_dir}")
+
 
         done < <(
             find "$setup_path" \
@@ -271,15 +417,24 @@ process_setup() {
                 -print0
         )
 
+
         #######################################################################
-        # SORT RUNS NUMERICALLY BY Y
+        # CHECK FOR RUNS
         #######################################################################
 
         if (( ${#run_dirs[@]} == 0 )); then
+
             echo "Warning: no runs found for XX=$xx in:" >&2
             echo "  $setup_path" >&2
+
             continue
+
         fi
+
+
+        #######################################################################
+        # SORT RUNS NUMERICALLY BY Y
+        #######################################################################
 
         mapfile -t run_dirs < <(
             printf '%s\n' "${run_dirs[@]}" |
@@ -287,13 +442,17 @@ process_setup() {
             cut -f2-
         )
 
+
         #######################################################################
-        # ADD FRAMES FROM EACH RUN
+        # PROCESS EACH RUN
         #######################################################################
 
         for run_dir in "${run_dirs[@]}"; do
+
             echo "Adding: $run_dir" >&2
+
             add_run_frames "$run_dir" "$FPS"
+
         done
 
     done
@@ -301,36 +460,36 @@ process_setup() {
 
 
 ###############################################################################
-# BUILD THE COMPLETE FRAME LIST
+# BUILD COMPLETE FRAME LIST
 ###############################################################################
 
 echo "============================================================" >&2
 echo "Building animation frame list" >&2
 echo "============================================================" >&2
 
+
+###############################################################################
+# SETUP 1
+###############################################################################
+
 echo >&2
 echo "Processing setup1..." >&2
 
-# setup1 uses:
-#
-#     XXrun_Y
-#
 process_setup \
     "$SETUP1_PATH" \
     SETUP1_XX \
     underscore
 
 
-# setup2 is optional.
+###############################################################################
+# SETUP 2 (OPTIONAL)
+###############################################################################
+
 if [[ -n "$SETUP2" ]]; then
 
     echo >&2
     echo "Processing setup2..." >&2
 
-    # setup2 uses:
-    #
-    #     XXrunY
-    #
     process_setup \
         "$SETUP2_PATH" \
         SETUP2_XX \
@@ -343,25 +502,34 @@ else
 
 fi
 
+
 ###############################################################################
 # CHECK THAT FRAMES WERE FOUND
 ###############################################################################
 
 if [[ ! -s "$CONCAT_FILE" ]]; then
+
     echo >&2
-    echo "Error: no PNG frames were found." >&2
+    echo "Error: no PNG frames were found after applying skip list." >&2
     exit 1
+
 fi
 
+
 FRAME_COUNT=$(grep -c '^file ' "$CONCAT_FILE")
+
+
+###############################################################################
+# SUMMARY
+###############################################################################
 
 echo >&2
 echo "============================================================" >&2
 echo "Frame list complete" >&2
 echo "============================================================" >&2
-echo "Frames found : $FRAME_COUNT" >&2
-echo "Frame rate   : $FPS fps" >&2
-echo "Output       : $OUTPUT" >&2
+echo "Frames included : $FRAME_COUNT" >&2
+echo "Frame rate      : $FPS fps" >&2
+echo "Output          : $OUTPUT" >&2
 echo >&2
 
 
