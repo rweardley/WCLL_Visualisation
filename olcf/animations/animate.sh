@@ -22,7 +22,7 @@ SETUP1_VIS="vol_fluids_velocity_all_jet_split"
 
 # XX values to include from setup1.
 #
-# setup1 directories have the form:
+# setup directories have the form:
 #
 #     XXrun_Y
 #
@@ -37,19 +37,13 @@ SETUP1_XX=(13 14 15 16)
 #
 # Set this to "" if setup2 is not currently available.
 #
-# SETUP2="buo0_mhd1_mc1"
-SETUP2=""
+SETUP2="buo0_mhd1_mc1"
 
 # Name of visualisation directory inside setup2.
 SETUP2_VIS=$SETUP1_VIS
 
 # XX values to include from setup2.
-#
-# setup2 directories have the form:
-#
-#     XXrunY
-#
-SETUP2_XX=()
+SETUP2_XX=(01)
 
 
 # ============================================================================
@@ -346,7 +340,6 @@ process_setup() {
 
         if [[ "$naming_style" == "underscore" ]]; then
 
-            # setup1:
             #
             #     XXrun_Y
             #
@@ -354,7 +347,6 @@ process_setup() {
 
         else
 
-            # setup2:
             #
             #     XXrunY
             #
@@ -493,7 +485,7 @@ if [[ -n "$SETUP2" ]]; then
     process_setup \
         "$SETUP2_PATH" \
         SETUP2_XX \
-        plain
+        underscore
 
 else
 
