@@ -28,6 +28,7 @@ runs=()
 force=0
 dry_run=0
 relative=0
+verbose=0
 
 usage() {
     cat <<'EOF'
@@ -51,12 +52,19 @@ Options:
   -R, --relative         Make relative symlinks instead of absolute ones.
   -f, --force            Delete any pre-existing <run>_N directories first.
   -n, --dry-run          Print what would be done, change nothing.
+  -v, --verbose          Log progress (timestamps, per-run and per-batch
+                         details) to stderr.
   -h, --help             Show this help.
 EOF
 }
 
 die() { printf 'error: %s\n' "$*" >&2; exit 1; }
 warn() { printf 'warning: %s\n' "$*" >&2; }
+log()  {  # progress message, only under --verbose (stderr, timestamped)
+    if [[ $verbose -eq 1 ]]; then
+        printf '[%s] %s\n' "$(date +%H:%M:%S)" "$*" >&2
+    fi
+}
 
 # ------------------------------------------------------------ arg parsing ---
 while [[ $# -gt 0 ]]; do
@@ -73,6 +81,7 @@ while [[ $# -gt 0 ]]; do
         -R|--relative)   relative=1; shift ;;
         -f|--force)      force=1;    shift ;;
         -n|--dry-run)    dry_run=1;  shift ;;
+        -v|--verbose)    verbose=1;  shift ;;
         -h|--help)       usage; exit 0 ;;
         *)               usage >&2; die "unknown argument: $1" ;;
     esac
@@ -90,6 +99,10 @@ if [[ ${#runs[@]} -eq 0 ]]; then
         runs+=("$(printf '%02d%s' "$i" "$run_suffix")")
     done
 fi
+
+log "settings: input=$input_dir output=$output_dir batch_size=$batch_size stride=$stride" \
+    "prefix='${prefix:-<auto>}' relative=$relative force=$force dry_run=$dry_run"
+log "processing ${#runs[@]} run director$([[ ${#runs[@]} -eq 1 ]] && echo y || echo ies): ${runs[*]}"
 
 run() {  # execute, or just echo under --dry-run
     if [[ $dry_run -eq 1 ]]; then
@@ -154,6 +167,7 @@ write_zero_metadata() {
 }
 
 input_abs="$(cd "$input_dir" && pwd -P)"
+log "resolved input directory: $input_abs"
 if [[ $dry_run -eq 0 ]]; then
     mkdir -p "$output_dir"
     output_abs="$(cd "$output_dir" && pwd -P)"
@@ -178,10 +192,15 @@ for run_name in "${runs[@]}"; do
         continue
     fi
 
+    run_t0=$SECONDS
+    log "[$run_name] scanning $run_dir"
+
     # Collect the field files: <prefix>.fNNNNN
     # (shell glob: readdir only, no per-file stat)
     all_files=( "$run_dir"/*0.f[0-9][0-9][0-9][0-9][0-9] )
     all_files=( "${all_files[@]##*/}" )   # strip the directory, keep basenames
+
+    log "[$run_name] scan finished in $((SECONDS - run_t0))s: ${#all_files[@]} matching files"
 
     if [[ ${#all_files[@]} -eq 0 ]]; then
         warn "skipping $run_name: no *0.f????? files found"
@@ -197,6 +216,8 @@ for run_name in "${runs[@]}"; do
         fi
         run_prefix="${found[0]}"
     fi
+
+    log "[$run_name] field prefix: $run_prefix"
 
     mesh="$run_dir/${run_prefix}.f00000"
     [[ -f "$mesh" ]] || die "$run_name: mesh file ${run_prefix}.f00000 not found"
@@ -238,12 +259,18 @@ for run_name in "${runs[@]}"; do
     done
 
     n_selected=${#selected[@]}
+    log "[$run_name] stride $stride: $n_selected non-zero checkpoints selected," \
+        "f00000 selected by stride: $([[ $zero_selected -eq 1 ]] && echo yes || echo no)," \
+        "global index now $global_index"
 
     # With --force, drop every existing <run>_N so a smaller batch count
     # doesn't leave stale directories behind.
     if [[ $force -eq 1 ]]; then
         for stale in "$output_abs/${run_name}"_[0-9]*; do
-            [[ -e "$stale" ]] && run rm -rf "$stale"
+            if [[ -e "$stale" ]]; then
+                log "[$run_name] --force: removing stale $stale"
+                run rm -rf "$stale"
+            fi
         done
     fi
 
@@ -269,6 +296,7 @@ for run_name in "${runs[@]}"; do
                 die "$batch_dir already exists (use --force to overwrite)"
             fi
         fi
+        log "[$run_name] batch $((b + 1))/$n_batches: creating $batch_dir"
         run mkdir -p "$batch_dir"
 
         # Link target helper: absolute by default, relative with -R.
@@ -297,8 +325,10 @@ for run_name in "${runs[@]}"; do
 
         # 3. the .nek5000 metadata file: idx == mesh link + batch links
         write_metadata "$batch_dir" "$run_prefix" "$idx" "$run_dir"
+        log "[$run_name] batch $((b + 1))/$n_batches: linked mesh + $((idx - 1)) checkpoints," \
+            "wrote ${run_prefix%0}.nek5000 (numtimesteps: $idx)"
 
-                if (( n_selected > 0 )); then
+        if (( n_selected > 0 )); then
             first_idx=$(( b * batch_size ))
             last_idx=$(( (b + 1) * batch_size - 1 ))
             (( last_idx >= n_selected )) && last_idx=$(( n_selected - 1 ))
@@ -314,7 +344,10 @@ for run_name in "${runs[@]}"; do
 
         total_dirs=$((total_dirs + 1))
     done
+
+    log "[$run_name] done in $((SECONDS - run_t0))s (running totals: $total_dirs dirs, $total_links links)"
 done
 
+log "all runs processed in ${SECONDS}s"
 printf '\nDone: %d batch directories, %d symlinks under %s\n' \
     "$total_dirs" "$total_links" "$output_abs"
