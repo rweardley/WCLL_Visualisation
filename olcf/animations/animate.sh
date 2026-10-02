@@ -66,6 +66,7 @@ SETUP2_XX=(01)
 #
 SKIP_FRAMES=(
     "buo0_mhd0_mc1/vol_fluids_velocity_all_jet_split/15run_1/frame_0013.png"
+    "buo0_mhd0_mc1/vol_fluids_velocity_all_jet_split/16run_3/frame_0004.png"
 )
 
 
@@ -85,9 +86,24 @@ SKIP_FRAMES=(
 #
 OUTPUT="animation.mp4"
 
-# Frame rate in frames per second.
-FPS=24
+# Default frame rate for frames not covered by SLOW_RANGES.
+DEFAULT_FPS=40
 
+# Slow-motion ranges.
+#
+# Format:
+#
+#     "setup/volume/run_directory:start_frame-end_frame:fps"
+#
+# Examples:
+#
+#     setup1/vol/15run_4 frames 15-20 at 5 fps
+#     setup2/vol/01run_1 frames 0-5 at 5 fps
+#
+SLOW_RANGES=(
+    "${SETUP1}/${SETUP1_VIS}/16run_4:0-3:10"
+    "${SETUP2}/${SETUP2_VIS}/01run_1:0-3:10"
+)
 
 ###############################################################################
 # END OF USER CONFIGURATION
@@ -113,9 +129,9 @@ if ! command -v sort >/dev/null 2>&1; then
     exit 1
 fi
 
-if ! [[ "$FPS" =~ ^[0-9]+([.][0-9]+)?$ ]] ||
-   ! awk "BEGIN { exit ($FPS > 0 ? 0 : 1) }"; then
-    echo "Error: FPS must be a positive number." >&2
+if ! [[ "$DEFAULT_FPS" =~ ^[0-9]+([.][0-9]+)?$ ]] ||
+   ! awk "BEGIN { exit ($DEFAULT_FPS > 0 ? 0 : 1) }"; then
+    echo "Error: DEFAULT_FPS must be a positive number." >&2
     exit 1
 fi
 
@@ -222,6 +238,76 @@ escape_for_ffmpeg() {
     printf "'%s'" "$path"
 }
 
+###############################################################################
+# SET FPS
+###############################################################################
+
+get_frame_fps() {
+    local frame="$1"
+
+    local range
+    local range_run
+    local range_start
+    local range_end
+    local range_fps
+
+    local frame_dir
+    local frame_number
+
+    # Get the directory containing the frame.
+    frame_dir=$(dirname "$frame")
+
+    # Extract the four-digit frame number.
+    frame_number=$(basename "$frame" | sed -E 's/^frame_([0-9]{4})\.png$/\1/')
+
+    # Convert to decimal integer so that e.g. 0005 becomes 5.
+    frame_number=$((10#$frame_number))
+
+    for range in "${SLOW_RANGES[@]}"; do
+
+        # Split:
+        #
+        # setup1/vol/15run_4:15-20:5
+        #
+        # into:
+        #
+        # range_run   = setup1/vol/15run_4
+        # range_start = 15
+        # range_end   = 20
+        # range_fps   = 5
+
+        IFS=':' read -r range_run frame_range range_fps <<< "$range"
+
+        IFS='-' read -r range_start range_end <<< "$frame_range"
+
+        # Convert the range boundaries to integers.
+        range_start=$((10#$range_start))
+        range_end=$((10#$range_end))
+
+        # Convert the run directory to an absolute path.
+        local range_run_path
+
+        if [[ "$range_run" = /* ]]; then
+            range_run_path="$range_run"
+        else
+            range_run_path="${BASE_DIR}/${range_run}"
+        fi
+
+        # Compare the frame's directory with the configured run directory.
+        if [[ "$(realpath "$frame_dir")" == "$(realpath -m "$range_run_path")" ]]; then
+
+            if (( frame_number >= range_start && frame_number <= range_end )); then
+                echo "$range_fps"
+                return
+            fi
+
+        fi
+
+    done
+
+    # No slow range applies.
+    echo "$DEFAULT_FPS"
+}
 
 ###############################################################################
 # ADD ALL FRAMES FROM ONE RUN
@@ -229,10 +315,10 @@ escape_for_ffmpeg() {
 
 add_run_frames() {
     local run_dir="$1"
-    local fps="$2"
 
     local frames=()
     local frame
+    local frame_fps
     local duration
 
     ###########################################################################
@@ -269,11 +355,11 @@ add_run_frames() {
     )
 
 
-    ###########################################################################
-    # FRAME DURATION
-    ###########################################################################
+    # ###########################################################################
+    # # FRAME DURATION
+    # ###########################################################################
 
-    duration=$(awk "BEGIN { printf \"%.12f\", 1/$fps }")
+    # duration=$(awk "BEGIN { printf \"%.12f\", 1/$fps }")
 
 
     ###########################################################################
@@ -287,6 +373,12 @@ add_run_frames() {
             echo "Skipping: $frame" >&2
             continue
         fi
+
+        # Determine the FPS for this particular frame.
+        frame_fps=$(get_frame_fps "$frame")
+
+        # Convert FPS to frame duration.
+        duration=$(awk "BEGIN { printf \"%.12f\", 1/$frame_fps }")
 
         printf "file %s\n" "$(escape_for_ffmpeg "$frame")" >> "$CONCAT_FILE"
         printf "duration %s\n" "$duration" >> "$CONCAT_FILE"
@@ -443,7 +535,7 @@ process_setup() {
 
             echo "Adding: $run_dir" >&2
 
-            add_run_frames "$run_dir" "$FPS"
+            add_run_frames "$run_dir"
 
         done
 
@@ -520,7 +612,7 @@ echo "============================================================" >&2
 echo "Frame list complete" >&2
 echo "============================================================" >&2
 echo "Frames included : $FRAME_COUNT" >&2
-echo "Frame rate      : $FPS fps" >&2
+echo "Default frame rate      : $DEFAULT_FPS fps" >&2
 echo "Output          : $OUTPUT" >&2
 echo >&2
 
@@ -535,8 +627,6 @@ ffmpeg \
     -f concat \
     -safe 0 \
     -i "$CONCAT_FILE" \
-    -vf "fps=${FPS}" \
-    -vsync cfr \
     "$OUTPUT"
 
 
