@@ -5,7 +5,9 @@
 # For each run directory (e.g. 00run .. 18run) this creates
 #   <output>/<run>_1, <output>/<run>_2, ...
 # each containing at most <batch-size> checkpoint symlinks, renumbered from
-# .f00001, and preceded by a link to the mesh-carrying .f00000 file.
+# .f00001, and preceded by a link to the mesh-carrying .f00000 file. Each batch
+# also gets a "zero_checkpoint" file saying whether that f00000 is a real
+# member of the (strided) sequence or only a mesh.
 #
 # Example (batch size 20, sources .f00000 .. .f00057):
 #   18run_1/  f00000 -> 18run/f00000   f00001..f00020 -> 18run/f00001..f00020
@@ -151,9 +153,11 @@ EOF
 
 # write_zero_metadata <batch-dir> <yes|no>
 #
-# Records whether this run's f00000 was selected by the global stride and
-# therefore needs to be retained downstream as an animation checkpoint.
-# f00000 itself is always linked into every batch regardless of this flag.
+# Writes <batch-dir>/zero_checkpoint containing "keep_zero: yes" or
+# "keep_zero: no". "yes" means the f00000 in this batch directory is a real
+# member of the animation sequence (it is the run's zeroth checkpoint AND was
+# selected by the global stride); "no" means it is present only because every
+# batch needs a mesh. f00000 is always linked regardless of this flag.
 write_zero_metadata() {
     local batch_dir="$1" keep_zero="$2"
     local meta="$batch_dir/zero_checkpoint"
@@ -325,8 +329,18 @@ for run_name in "${runs[@]}"; do
 
         # 3. the .nek5000 metadata file: idx == mesh link + batch links
         write_metadata "$batch_dir" "$run_prefix" "$idx" "$run_dir"
+        # 4. tell downstream whether this batch's f00000 is a real timestep.
+        #    A run's f00000 sits only at the start of its first batch; in
+        #    every later batch it is a mesh-only link.
+        if (( b == 0 && zero_selected == 1 )); then
+            keep_zero=yes
+        else
+            keep_zero=no
+        fi
+        write_zero_metadata "$batch_dir" "$keep_zero"
+
         log "[$run_name] batch $((b + 1))/$n_batches: linked mesh + $((idx - 1)) checkpoints," \
-            "wrote ${run_prefix%0}.nek5000 (numtimesteps: $idx)"
+            "wrote ${run_prefix%0}.nek5000 (numtimesteps: $idx), keep_zero=$keep_zero"
 
         if (( n_selected > 0 )); then
             first_idx=$(( b * batch_size ))
