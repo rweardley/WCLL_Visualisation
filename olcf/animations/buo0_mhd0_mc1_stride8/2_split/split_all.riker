@@ -5,7 +5,7 @@
 #SBATCH -N 8
 #SBATCH --ntasks-per-node=128
 #SBATCH --cpus-per-task=1
-#SBATCH -J mhd0
+#SBATCH -J mhd0_stride8
 #SBATCH -o log_%x-%j.out
 #SBATCH --exclusive
 #SBATCH --array=0-37
@@ -18,8 +18,8 @@ export LD_LIBRARY_PATH=/usr/mpi/gcc/openmpi-4.1.9a1/lib64:$LD_LIBRARY_PATH
 BATCH=1
 RUN=$(printf '%02d' "${SLURM_ARRAY_TASK_ID}")
 
-SOURCE_DIR="/lustre/orion/fus166/proj-shared/rweb/gb_final/animation/buo0_mhd0_mc1_stride4/${RUN}run_${BATCH}"
-OUTPUT_DIR="/lustre/orion/fus166/proj-shared/rweb/gb_final/animation/buo0_mhd0_mc1_stride4/${RUN}run_${BATCH}"
+SOURCE_DIR="/lustre/orion/fus166/proj-shared/rweb/gb_final/animation/buo0_mhd0_mc1_stride8/${RUN}run_${BATCH}"
+OUTPUT_DIR="/lustre/orion/fus166/proj-shared/rweb/gb_final/animation/buo0_mhd0_mc1_stride8/${RUN}run_${BATCH}"
 PINK=1
 MHDPINK=0
 CURRPINK=0
