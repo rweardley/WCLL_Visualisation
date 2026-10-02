@@ -7,7 +7,8 @@
   --input `pwd`/"dummy_runs" \
   --output "linked_dummy_runs" \
   --batch-size 20 \
-  --force
+  --force \
+  # --verbose
 
 ../link_checkpoints.sh \
   --start 0 --end 18 \
@@ -15,4 +16,5 @@
   --output "linked_dummy_runs_stride" \
   --batch-size 20 \
   --stride 4 \
-  --force
+  --force \
+  # --verbose

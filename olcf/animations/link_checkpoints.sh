@@ -280,10 +280,14 @@ for run_name in "${runs[@]}"; do
 
     if (( n_selected > 0 )); then
         n_batches=$(( (n_selected + batch_size - 1) / batch_size ))
-    else
-        # Even when this run contributes no stride-selected checkpoint, one
-        # batch is required so its mandatory f00000 mesh is available.
+    elif (( zero_selected == 1 )); then
+        # Only f00000 was selected: one batch holding just that timestep.
         n_batches=1
+    else
+        # Nothing from this run is in the strided sequence, so no batch is
+        # needed (a mesh-only batch would contain zero timesteps).
+        n_batches=0
+        log "[$run_name] no checkpoints selected by stride; creating no batch directories"
     fi
 
     printf '%s: %d original checkpoints -> %d selected with stride %d -> %d batch director%s\n' \
@@ -349,8 +353,8 @@ for run_name in "${runs[@]}"; do
             first_src="${selected[first_idx]}"
             last_src="${selected[last_idx]}"
         else
-            first_src="(mesh only)"
-            last_src="(mesh only)"
+            first_src="${run_prefix}.f00000"
+            last_src="${run_prefix}.f00000"
         fi
 
         printf '  %-16s %s -> %s  (%d checkpoints)\n' \
