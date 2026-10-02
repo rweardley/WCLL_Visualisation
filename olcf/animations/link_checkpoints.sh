@@ -298,10 +298,19 @@ for run_name in "${runs[@]}"; do
         # 3. the .nek5000 metadata file: idx == mesh link + batch links
         write_metadata "$batch_dir" "$run_prefix" "$idx" "$run_dir"
 
+                if (( n_selected > 0 )); then
+            first_idx=$(( b * batch_size ))
+            last_idx=$(( (b + 1) * batch_size - 1 ))
+            (( last_idx >= n_selected )) && last_idx=$(( n_selected - 1 ))
+            first_src="${selected[first_idx]}"
+            last_src="${selected[last_idx]}"
+        else
+            first_src="(mesh only)"
+            last_src="(mesh only)"
+        fi
+
         printf '  %-16s %s -> %s  (%d checkpoints)\n' \
-            "${run_name}_$((b + 1))" "${data[b * batch_size]}" \
-            "${data[$(( (b + 1) * batch_size < n_data ? (b + 1) * batch_size - 1 : n_data - 1 ))]}" \
-            "$((idx - 1))"
+            "${run_name}_$((b + 1))" "$first_src" "$last_src" "$((idx - 1))"
 
         total_dirs=$((total_dirs + 1))
     done

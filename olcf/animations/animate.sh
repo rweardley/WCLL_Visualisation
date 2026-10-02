@@ -87,7 +87,7 @@ SKIP_FRAMES=(
 OUTPUT="animation.mp4"
 
 # Default frame rate for frames not covered by SLOW_RANGES.
-DEFAULT_FPS=40
+DEFAULT_FPS=24
 
 # Slow-motion ranges.
 #

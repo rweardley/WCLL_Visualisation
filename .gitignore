@@ -4,3 +4,5 @@ __pycache__
 *.tsv
 *.png
 *.mp4
+*0.f*
+*.nek5000
