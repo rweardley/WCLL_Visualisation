@@ -16,6 +16,7 @@ set -euo pipefail
 
 # ---------------------------------------------------------------- defaults ---
 batch_size=20
+stride=1
 input_dir="."
 output_dir="./checkpoint_links"
 prefix=""
@@ -34,6 +35,8 @@ Usage: link_checkpoints.sh [options]
 Options:
   -b, --batch-size N     Checkpoints per batch directory, excluding the mesh
                          link (default: 20).
+  -s, --stride N         Keep every Nth checkpoint in the global sequence
+                         (default: 1).
   -i, --input DIR        Directory containing the XXrun folders (default: .).
   -o, --output DIR       Where the batch directories are created
                          (default: ./checkpoint_links).
@@ -58,6 +61,7 @@ warn() { printf 'warning: %s\n' "$*" >&2; }
 while [[ $# -gt 0 ]]; do
     case "$1" in
         -b|--batch-size) batch_size="${2:?missing value for $1}"; shift 2 ;;
+        -s|--stride)     stride="${2:?missing value for $1}";     shift 2 ;;
         -i|--input)      input_dir="${2:?missing value for $1}";  shift 2 ;;
         -o|--output)     output_dir="${2:?missing value for $1}"; shift 2 ;;
         -p|--prefix)     prefix="${2:?missing value for $1}";     shift 2 ;;
@@ -75,6 +79,8 @@ done
 
 [[ "$batch_size" =~ ^[0-9]+$ && "$batch_size" -gt 0 ]] \
     || die "batch size must be a positive integer (got '$batch_size')"
+[[ "$stride" =~ ^[0-9]+$ && "$stride" -gt 0 ]] \
+    || die "stride must be a positive integer (got '$stride')"
 [[ -d "$input_dir" ]] || die "input directory not found: $input_dir"
 
 # Build the default run list if none was given explicitly.
@@ -129,6 +135,23 @@ EOF
     fi
 }
 
+# write_zero_metadata <batch-dir> <yes|no>
+#
+# Records whether this run's f00000 was selected by the global stride and
+# therefore needs to be retained downstream as an animation checkpoint.
+# f00000 itself is always linked into every batch regardless of this flag.
+write_zero_metadata() {
+    local batch_dir="$1" keep_zero="$2"
+    local meta="$batch_dir/zero_checkpoint"
+
+    if [[ $dry_run -eq 1 ]]; then
+        printf '  [dry-run] write %s: keep_zero=%s\n' "$meta" "$keep_zero"
+        return
+    fi
+
+    printf 'keep_zero: %s\n' "$keep_zero" > "$meta"
+}
+
 input_abs="$(cd "$input_dir" && pwd -P)"
 if [[ $dry_run -eq 0 ]]; then
     mkdir -p "$output_dir"
@@ -140,6 +163,11 @@ fi
 # ----------------------------------------------------------------- main -----
 total_dirs=0
 total_links=0
+
+# Position in the complete temporal checkpoint sequence. This deliberately
+# spans run boundaries so that --stride produces uniform temporal spacing
+# throughout the final animation.
+global_index=0
 
 for run_name in "${runs[@]}"; do
     run_dir="$input_abs/$run_name"
@@ -173,18 +201,43 @@ for run_name in "${runs[@]}"; do
     mesh="$run_dir/${run_prefix}.f00000"
     [[ -f "$mesh" ]] || die "$run_name: mesh file ${run_prefix}.f00000 not found"
 
-    # Data checkpoints = everything except .f00000, in numerical order.
-    mapfile -t data < <(
+    # All checkpoints for this run, including f00000, in numerical order.
+    # f00000 is both the mesh required to read the run and the run's zeroth
+    # checkpoint, so it participates in the global stride sequence.
+    mapfile -t run_checkpoints < <(
         printf '%s\n' "${all_files[@]}" \
-            | grep -E "^${run_prefix//./\\.}\.f[0-9]{5}$" \
-            | grep -v "\.f00000$"
+            | grep -E "^${run_prefix//./\\.}\.f[0-9]{5}$"
     )
 
-    n_data=${#data[@]}
-    if [[ $n_data -eq 0 ]]; then
-        warn "$run_name: only the mesh file is present, nothing to batch"
+    n_run_checkpoints=${#run_checkpoints[@]}
+
+    if [[ $n_run_checkpoints -eq 0 ]]; then
+        warn "$run_name: no checkpoints found"
         continue
     fi
+
+    # Apply the stride to the single global temporal sequence spanning all
+    # processed runs. The selected array contains only non-zero checkpoints
+    # that belong to the animation sequence; the mandatory mesh link is
+    # added separately to every batch below.
+    selected=()
+    zero_selected=0
+
+    for checkpoint_name in "${run_checkpoints[@]}"; do
+        if (( global_index % stride == 0 )); then
+            if [[ "$checkpoint_name" == "${run_prefix}.f00000" ]]; then
+                # f00000 is represented by the mandatory mesh link below;
+                # do not add a second link to it as .f00001.
+                zero_selected=1
+            else
+                selected+=("$checkpoint_name")
+            fi
+        fi
+
+        global_index=$((global_index + 1))
+    done
+
+    n_selected=${#selected[@]}
 
     # With --force, drop every existing <run>_N so a smaller batch count
     # doesn't leave stale directories behind.
@@ -194,9 +247,16 @@ for run_name in "${runs[@]}"; do
         done
     fi
 
-    n_batches=$(( (n_data + batch_size - 1) / batch_size ))
-    printf '%s: %d checkpoints -> %d batch director%s\n' \
-        "$run_name" "$n_data" "$n_batches" \
+    if (( n_selected > 0 )); then
+        n_batches=$(( (n_selected + batch_size - 1) / batch_size ))
+    else
+        # Even when this run contributes no stride-selected checkpoint, one
+        # batch is required so its mandatory f00000 mesh is available.
+        n_batches=1
+    fi
+
+    printf '%s: %d original checkpoints -> %d selected with stride %d -> %d batch director%s\n' \
+        "$run_name" "$n_run_checkpoints" "$n_selected" "$stride" "$n_batches" \
         "$([[ $n_batches -eq 1 ]] && echo y || echo ies)"
 
     for ((b = 0; b < n_batches; b++)); do
@@ -224,11 +284,13 @@ for run_name in "${runs[@]}"; do
         link_to "$mesh" "$batch_dir/${run_prefix}.f00000"
         total_links=$((total_links + 1))
 
-        # 2. this batch's checkpoints, renumbered from .f00001
+        # 2. this batch's globally stride-selected checkpoints, renumbered
+        #    locally from .f00001. The mesh link above does not consume a
+        #    batch slot.
         idx=1
-        for ((j = b * batch_size; j < (b + 1) * batch_size && j < n_data; j++)); do
+        for ((j = b * batch_size; j < (b + 1) * batch_size && j < n_selected; j++)); do
             printf -v link_name '%s.f%05d' "$run_prefix" "$idx"
-            link_to "$run_dir/${data[j]}" "$batch_dir/$link_name"
+            link_to "$run_dir/${selected[j]}" "$batch_dir/$link_name"
             idx=$((idx + 1))
             total_links=$((total_links + 1))
         done
