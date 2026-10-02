@@ -6,6 +6,7 @@
 #SBATCH --gpus=2
 #SBATCH --ntasks-per-node=2
 #SBATCH --cpus-per-gpu=32
+#SBATCH --exclusive
 #SBATCH -J mhd0_rdr_stride8
 #SBATCH -o log_%x-%j.out
 #SBATCH --array=0-37
