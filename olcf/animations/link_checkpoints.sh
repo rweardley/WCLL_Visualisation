@@ -13,6 +13,7 @@
 #   18run_3/  f00000 -> 18run/f00000   f00001..f00017 -> 18run/f00041..f00057
 
 set -euo pipefail
+shopt -s nullglob
 
 # ---------------------------------------------------------------- defaults ---
 batch_size=20
@@ -178,10 +179,9 @@ for run_name in "${runs[@]}"; do
     fi
 
     # Collect the field files: <prefix>.fNNNNN
-    mapfile -t all_files < <(
-        find "$run_dir" -maxdepth 1 -type f \
-             -name '*0.f[0-9][0-9][0-9][0-9][0-9]' -printf '%f\n' | sort
-    )
+    # (shell glob: readdir only, no per-file stat)
+    all_files=( "$run_dir"/*0.f[0-9][0-9][0-9][0-9][0-9] )
+    all_files=( "${all_files[@]##*/}" )   # strip the directory, keep basenames
 
     if [[ ${#all_files[@]} -eq 0 ]]; then
         warn "skipping $run_name: no *0.f????? files found"
