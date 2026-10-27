@@ -15,7 +15,7 @@ BASE_DIR=`pwd`
 # ============================================================================
 
 # Name of setup1 directory.
-SETUP1="buo0_mhd0_mc1"
+SETUP1="buo0_mhd0_mc1_stride8"
 
 # Name of visualisation directory inside setup1.
 SETUP1_VIS="vol_fluids_velocity_all_jet_split"
@@ -26,7 +26,8 @@ SETUP1_VIS="vol_fluids_velocity_all_jet_split"
 #
 #     XXrun_Y
 #
-SETUP1_XX=(13 14 15 16)
+# SETUP1_XX=($(seq -w 0 37))
+SETUP1_XX=($(seq 0 37))
 
 
 # ============================================================================
@@ -65,8 +66,8 @@ SETUP2_XX=(01)
 # You can add as many frames as necessary.
 #
 SKIP_FRAMES=(
-    "buo0_mhd0_mc1/vol_fluids_velocity_all_jet_split/15run_1/frame_0013.png"
-    "buo0_mhd0_mc1/vol_fluids_velocity_all_jet_split/16run_3/frame_0004.png"
+    # "buo0_mhd0_mc1/vol_fluids_velocity_all_jet_split/15run_1/frame_0013.png"
+    # "buo0_mhd0_mc1/vol_fluids_velocity_all_jet_split/16run_3/frame_0004.png"
 )
 
 
