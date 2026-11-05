@@ -38,7 +38,7 @@ SETUP_VIS=(
 )
 
 # SETUP1_XX=($(seq 33 37))
-SETUP2_XX=($(seq 0 3))
+SETUP2_XX=($(seq 0 9))
 # SETUP3_XX=(01)
 
 SETUP_XX=(
