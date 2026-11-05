@@ -8,7 +8,7 @@
 #SBATCH -J mhd0_ts_stride8
 #SBATCH -o log_%x-%j.out
 #SBATCH --exclusive
-#SBATCH --array=0-7
+#SBATCH --array=0-9
 
 source $HOME/riker_venv/bin/activate
 
