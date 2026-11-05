@@ -27,7 +27,8 @@ SETUP1_VIS="vol_fluids_velocity_all_jet_split"
 #     XXrun_Y
 #
 # SETUP1_XX=($(seq -w 0 37))
-SETUP1_XX=($(seq 0 37))
+# SETUP1_XX=($(seq 0 37))
+SETUP1_XX=($(seq 0 16))
 
 
 # ============================================================================
@@ -102,8 +103,9 @@ DEFAULT_FPS=24
 #     setup2/vol/01run_1 frames 0-5 at 5 fps
 #
 SLOW_RANGES=(
-    "${SETUP1}/${SETUP1_VIS}/16run_4:0-3:10"
-    "${SETUP2}/${SETUP2_VIS}/01run_1:0-3:10"
+    # "${SETUP1}/${SETUP1_VIS}/16run_1:0-7:10"
+    # "${SETUP2}/${SETUP2_VIS}/01run_1:0-30:10"
+    # "${SETUP2}/${SETUP2_VIS}/01run_2:0-11:10"
 )
 
 ###############################################################################
