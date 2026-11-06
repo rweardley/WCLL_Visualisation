@@ -24,33 +24,23 @@ BASE_DIR=`pwd`
 #
 
 SETUP_NAMES=(
-    # "buo0_mhd0_mc1_stride8"
     "buo0_mhd0_mc1_timeRescaled_stride8"
-    # "buo0_mhd1_mc1"
 )
 
 VIS_DIR_NAME="vol_fluids_velocity_all_jet_split"
 
 SETUP_VIS=(
-    # ${VIS_DIR_NAME}
     ${VIS_DIR_NAME}
-    # ${VIS_DIR_NAME}
 )
 
-# SETUP1_XX=($(seq 33 37))
-SETUP2_XX=($(seq 0 9))
-# SETUP3_XX=(01)
+SETUP1_XX=($(seq 0 10))
 
 SETUP_XX=(
-    # "${SETUP1_XX[*]}"
-    "${SETUP2_XX[*]}"
-    # "${SETUP3_XX[*]}"
+    "${SETUP1_XX[*]}"
 )
 
 RUN_STYLE=(
-    # "underscore"
     "underscore"
-    # "underscore"
 )
 
 # Individual frames to omit. Paths may be absolute or relative to BASE_DIR.
@@ -63,15 +53,24 @@ SKIP_FRAMES=(
 OUTPUT="animation_generalized.mp4"
 
 # Default frame rate for frames not covered by SLOW_RANGES.
-DEFAULT_FPS=10
+DEFAULT_FPS=24
 
 # Slow-motion ranges (inclusive frame numbers).
 # Format: "setup_name/visualisation_directory/run_directory:start-end:fps"
+
+# see buo0_mhd0_mc1_timeRescaled_stride8/calculate_framerates.py for calculation
 SLOW_RANGES=(
-    # "${SETUP_NAMES[1]}/${SETUP_VIS[1]}/00run_1:0-0:10"
-    # "${SETUP_NAMES[1]}/${SETUP_VIS[1]}/01run_1:0-4:10"
-    # "${SETUP_NAMES[1]}/${SETUP_VIS[1]}/01run_2:0-4:10"
-    # "${SETUP_NAMES[1]}/${SETUP_VIS[1]}/01run_1:0-3:10"
+    "${SETUP_NAMES[0]}/${SETUP_VIS[0]}/00run_1:0-0:42"
+    "${SETUP_NAMES[0]}/${SETUP_VIS[0]}/01run_1:0-4:42"
+    "${SETUP_NAMES[0]}/${SETUP_VIS[0]}/02run_1:0-4:42"
+    "${SETUP_NAMES[0]}/${SETUP_VIS[0]}/03run_1:0-4:42"
+    "${SETUP_NAMES[0]}/${SETUP_VIS[0]}/04run_1:0-4:42"
+    "${SETUP_NAMES[0]}/${SETUP_VIS[0]}/05run_1:0-4:42"
+    "${SETUP_NAMES[0]}/${SETUP_VIS[0]}/06run_1:0-3:13"
+    "${SETUP_NAMES[0]}/${SETUP_VIS[0]}/07run_1:0-2:12"
+    "${SETUP_NAMES[0]}/${SETUP_VIS[0]}/08run_1:0-3:8"
+    "${SETUP_NAMES[0]}/${SETUP_VIS[0]}/09run_1:0-2:5"
+    "${SETUP_NAMES[0]}/${SETUP_VIS[0]}/10run_1:0-2:5"
 )
 
 ###############################################################################
