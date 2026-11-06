@@ -45,7 +45,7 @@ SETUP2="buo0_mhd1_mc1"
 SETUP2_VIS=$SETUP1_VIS
 
 # XX values to include from setup2.
-SETUP2_XX=(01)
+SETUP2_XX=($(seq 1 4))
 
 
 # ============================================================================
@@ -104,7 +104,14 @@ DEFAULT_FPS=24
 #
 SLOW_RANGES=(
     # "${SETUP1}/${SETUP1_VIS}/16run_1:0-7:10"
-    # "${SETUP2}/${SETUP2_VIS}/01run_1:0-30:10"
+    "${SETUP2}/${SETUP2_VIS}/01run_1:0-20:196"
+    "${SETUP2}/${SETUP2_VIS}/01run_2:0-11:196"
+    "${SETUP2}/${SETUP2_VIS}/02run_1:0-20:196"
+    "${SETUP2}/${SETUP2_VIS}/02run_2:0-17:196"
+    "${SETUP2}/${SETUP2_VIS}/03run_1:0-20:196"
+    "${SETUP2}/${SETUP2_VIS}/03run_2:0-14:196"
+    "${SETUP2}/${SETUP2_VIS}/04run_1:0-20:196"
+    "${SETUP2}/${SETUP2_VIS}/04run_2:0-16:196"
     # "${SETUP2}/${SETUP2_VIS}/01run_2:0-11:10"
 )
 
