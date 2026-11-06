@@ -8,7 +8,7 @@
 #SBATCH --cpus-per-gpu=32
 #SBATCH -J mhd1_rdr01_stride8
 #SBATCH -o log_%x-%j.out
-#SBATCH --array=5-11
+#SBATCH --array=1-11
 #SBATCH --exclusive
 
 cd $SLURM_SUBMIT_DIR

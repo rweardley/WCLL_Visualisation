@@ -8,7 +8,7 @@
 #SBATCH -J mhd1_split01_stride8
 #SBATCH -o log_%x-%j.out
 #SBATCH --exclusive
-#SBATCH --array=5-11
+#SBATCH --array=1-11
 
 source $HOME/riker_venv/bin/activate
 

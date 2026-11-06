@@ -8,7 +8,7 @@
 #SBATCH -J mhd1_rsmpl01_stride8
 #SBATCH -o log_%x-%j.out
 #SBATCH --exclusive
-#SBATCH --array=5-11
+#SBATCH --array=1-11
 
 cd $SLURM_SUBMIT_DIR
 date
