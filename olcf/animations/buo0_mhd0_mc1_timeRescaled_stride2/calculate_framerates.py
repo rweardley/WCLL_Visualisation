@@ -30,4 +30,4 @@ for run in range(len(run_number_to_checkpoint_interval)):
     frame_rate = reference_frame_rate * (
         reference_interval / interval
     )
-    print(f"{run:02}run: {int(frame_rate)}")
+    print(f"{run:02}run: {frame_rate}")

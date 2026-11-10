@@ -7,7 +7,8 @@ cases=(
     # "buo0_mhd1_mc1/vol_fluids_velocity_all_jet_split/"
     # "buo0_mhd0_mc1_stride8/vol_fluids_velocity_all_jet_split/"
     # "buo0_mhd0_mc1_timeRescaled_stride8/vol_fluids_velocity_all_jet_split/"
-    "buo0_mhd1_mc1_stride8/vol_fluids_velocity_all_jet_split/"
+    # "buo0_mhd1_mc1_stride8/vol_fluids_velocity_all_jet_split/"
+    "buo0_mhd0_mc1_timeRescaled_stride2/vol_fluids_velocity_all_jet_split/"
 )
 
 

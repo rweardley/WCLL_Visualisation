@@ -25,21 +25,26 @@ BASE_DIR=`pwd`
 
 SETUP_NAMES=(
     "buo0_mhd0_mc1_timeRescaled_stride8"
+    "buo0_mhd0_mc1_timeRescaled_stride2"
 )
 
 VIS_DIR_NAME="vol_fluids_velocity_all_jet_split"
 
 SETUP_VIS=(
     ${VIS_DIR_NAME}
+    ${VIS_DIR_NAME}
 )
 
-SETUP1_XX=($(seq 0 10))
+SETUP1_XX=($(seq 0 5))
+SETUP2_XX=($(seq 6 10))
 
 SETUP_XX=(
     "${SETUP1_XX[*]}"
+    "${SETUP2_XX[*]}"
 )
 
 RUN_STYLE=(
+    "underscore"
     "underscore"
 )
 
@@ -66,11 +71,11 @@ SLOW_RANGES=(
     "${SETUP_NAMES[0]}/${SETUP_VIS[0]}/03run_1:0-4:42"
     "${SETUP_NAMES[0]}/${SETUP_VIS[0]}/04run_1:0-4:42"
     "${SETUP_NAMES[0]}/${SETUP_VIS[0]}/05run_1:0-4:42"
-    "${SETUP_NAMES[0]}/${SETUP_VIS[0]}/06run_1:0-3:13"
-    "${SETUP_NAMES[0]}/${SETUP_VIS[0]}/07run_1:0-2:12"
-    "${SETUP_NAMES[0]}/${SETUP_VIS[0]}/08run_1:0-3:8"
-    "${SETUP_NAMES[0]}/${SETUP_VIS[0]}/09run_1:0-2:5"
-    "${SETUP_NAMES[0]}/${SETUP_VIS[0]}/10run_1:0-2:5"
+    "${SETUP_NAMES[1]}/${SETUP_VIS[1]}/06run_1:0-3:52.5"
+    "${SETUP_NAMES[1]}/${SETUP_VIS[1]}/07run_1:0-2:49.412"
+    "${SETUP_NAMES[1]}/${SETUP_VIS[1]}/08run_1:0-3:33.6"
+    "${SETUP_NAMES[1]}/${SETUP_VIS[1]}/09run_1:0-2:20"
+    "${SETUP_NAMES[1]}/${SETUP_VIS[1]}/10run_1:0-2:20"
 )
 
 ###############################################################################
