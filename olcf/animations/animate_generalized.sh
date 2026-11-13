@@ -24,6 +24,7 @@ BASE_DIR=`pwd`
 #
 
 SETUP_NAMES=(
+    "buo0_mhd0_mc1_stride8"
     "buo0_mhd0_mc1_timeRescaled_stride8"
     "buo0_mhd0_mc1_timeRescaled_stride2"
 )
@@ -33,17 +34,21 @@ VIS_DIR_NAME="vol_fluids_velocity_all_jet_split"
 SETUP_VIS=(
     ${VIS_DIR_NAME}
     ${VIS_DIR_NAME}
+    ${VIS_DIR_NAME}
 )
 
-SETUP1_XX=($(seq 0 5))
-SETUP2_XX=($(seq 6 10))
+SETUP1_XX=($(seq 0 37))
+SETUP2_XX=($(seq 0 5))
+SETUP3_XX=($(seq 6 14))
 
 SETUP_XX=(
     "${SETUP1_XX[*]}"
     "${SETUP2_XX[*]}"
+    "${SETUP3_XX[*]}"
 )
 
 RUN_STYLE=(
+    "underscore"
     "underscore"
     "underscore"
 )
@@ -58,24 +63,43 @@ SKIP_FRAMES=(
 OUTPUT="animation_generalized.mp4"
 
 # Default frame rate for frames not covered by SLOW_RANGES.
-DEFAULT_FPS=24
+DEFAULT_FPS=32
 
 # Slow-motion ranges (inclusive frame numbers).
 # Format: "setup_name/visualisation_directory/run_directory:start-end:fps"
 
+# 00run: 25.200000000000003
+# 01run: 25.200000000000003
+# 02run: 25.200000000000003
+# 03run: 25.200000000000003
+# 04run: 25.200000000000003
+# 05run: 25.200000000000003
+# 06run: 31.5
+# 07run: 29.647058823529413
+# 08run: 20.16
+# 09run: 12.0
+# 10run: 12.0
+# 11run: 12.0
+# 12run: 12.0
+# 13run: 12.0
+
 # see buo0_mhd0_mc1_timeRescaled_stride8/calculate_framerates.py for calculation
 SLOW_RANGES=(
-    "${SETUP_NAMES[0]}/${SETUP_VIS[0]}/00run_1:0-0:42"
-    "${SETUP_NAMES[0]}/${SETUP_VIS[0]}/01run_1:0-4:42"
-    "${SETUP_NAMES[0]}/${SETUP_VIS[0]}/02run_1:0-4:42"
-    "${SETUP_NAMES[0]}/${SETUP_VIS[0]}/03run_1:0-4:42"
-    "${SETUP_NAMES[0]}/${SETUP_VIS[0]}/04run_1:0-4:42"
-    "${SETUP_NAMES[0]}/${SETUP_VIS[0]}/05run_1:0-4:42"
-    "${SETUP_NAMES[1]}/${SETUP_VIS[1]}/06run_1:0-3:52.5"
-    "${SETUP_NAMES[1]}/${SETUP_VIS[1]}/07run_1:0-2:49.412"
-    "${SETUP_NAMES[1]}/${SETUP_VIS[1]}/08run_1:0-3:33.6"
-    "${SETUP_NAMES[1]}/${SETUP_VIS[1]}/09run_1:0-2:20"
-    "${SETUP_NAMES[1]}/${SETUP_VIS[1]}/10run_1:0-2:20"
+    "${SETUP_NAMES[1]}/${SETUP_VIS[1]}/00run_1:0-0:25.2"
+    "${SETUP_NAMES[1]}/${SETUP_VIS[1]}/01run_1:0-4:25.2"
+    "${SETUP_NAMES[1]}/${SETUP_VIS[1]}/02run_1:0-4:25.2"
+    "${SETUP_NAMES[1]}/${SETUP_VIS[1]}/03run_1:0-4:25.2"
+    "${SETUP_NAMES[1]}/${SETUP_VIS[1]}/04run_1:0-4:25.2"
+    "${SETUP_NAMES[1]}/${SETUP_VIS[1]}/05run_1:0-4:25.2"
+    "${SETUP_NAMES[2]}/${SETUP_VIS[2]}/06run_1:0-13:31.5"
+    "${SETUP_NAMES[2]}/${SETUP_VIS[2]}/07run_1:0-13:29.647"
+    "${SETUP_NAMES[2]}/${SETUP_VIS[2]}/08run_1:0-14:20.16"
+    "${SETUP_NAMES[2]}/${SETUP_VIS[2]}/09run_1:0-10:12.0"
+    "${SETUP_NAMES[2]}/${SETUP_VIS[2]}/10run_1:0-11:12.0"
+    "${SETUP_NAMES[2]}/${SETUP_VIS[2]}/11run_1:0-7:12.0"
+    "${SETUP_NAMES[2]}/${SETUP_VIS[2]}/12run_1:0-7:12.0"
+    "${SETUP_NAMES[2]}/${SETUP_VIS[2]}/13run_1:0-7:12.0"
+    "${SETUP_NAMES[2]}/${SETUP_VIS[2]}/14run_1:0-10:3"
 )
 
 ###############################################################################

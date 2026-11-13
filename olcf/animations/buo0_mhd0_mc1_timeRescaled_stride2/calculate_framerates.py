@@ -9,10 +9,13 @@ run_number_to_checkpoint_interval = [
     1.7e-4,     # 07run
     2.5e-4,     # 08run
     4.2e-4,     # 09run
-    4.2e-4      # 10run
+    4.2e-4,     # 10run
+    4.2e-4,     # 11run
+    4.2e-4,     # 12run
+    4.2e-4,     # 13run
 ]
 
-reference_frame_rate = 20
+reference_frame_rate = 12
 reference_run_number = 10
 
 def stride_from_run(run):
