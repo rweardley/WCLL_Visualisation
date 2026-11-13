@@ -27,6 +27,7 @@ SETUP_NAMES=(
     "buo0_mhd0_mc1_stride8"
     "buo0_mhd0_mc1_timeRescaled_stride8"
     "buo0_mhd0_mc1_timeRescaled_stride2"
+    "additional_frames"
 )
 
 VIS_DIR_NAME="vol_fluids_velocity_all_jet_split"
@@ -35,19 +36,23 @@ SETUP_VIS=(
     ${VIS_DIR_NAME}
     ${VIS_DIR_NAME}
     ${VIS_DIR_NAME}
+    ""
 )
 
 SETUP1_XX=($(seq 0 37))
 SETUP2_XX=($(seq 0 5))
-SETUP3_XX=($(seq 6 14))
+SETUP3_XX=($(seq 6 13))
+SETUP4_XX=(1)
 
 SETUP_XX=(
     "${SETUP1_XX[*]}"
     "${SETUP2_XX[*]}"
     "${SETUP3_XX[*]}"
+    "${SETUP4_XX[*]}"
 )
 
 RUN_STYLE=(
+    "underscore"
     "underscore"
     "underscore"
     "underscore"
@@ -57,10 +62,11 @@ RUN_STYLE=(
 SKIP_FRAMES=(
     # "buo0_mhd0_mc1_stride8/vol_fluids_velocity_all_jet_split/15run_1/frame_0013.png"
     # "buo0_mhd1_mc1/vol_fluids_velocity_all_jet_split/01run_1/frame_0004.png"
+    "additional_frames/01run_1/frame_0000.png"
 )
 
 # Output animation. The extension selects the container/format.
-OUTPUT="animation_generalized.mp4"
+OUTPUT="animation_v4.mp4"
 
 # Default frame rate for frames not covered by SLOW_RANGES.
 DEFAULT_FPS=32
@@ -99,7 +105,9 @@ SLOW_RANGES=(
     "${SETUP_NAMES[2]}/${SETUP_VIS[2]}/11run_1:0-7:12.0"
     "${SETUP_NAMES[2]}/${SETUP_VIS[2]}/12run_1:0-7:12.0"
     "${SETUP_NAMES[2]}/${SETUP_VIS[2]}/13run_1:0-7:12.0"
-    "${SETUP_NAMES[2]}/${SETUP_VIS[2]}/14run_1:0-10:3"
+    # "${SETUP_NAMES[2]}/${SETUP_VIS[2]}/14run_1:0-10:3"
+    "${SETUP_NAMES[3]}/${SETUP_VIS[3]}/01run_1:0-6:5"
+    "${SETUP_NAMES[3]}/${SETUP_VIS[3]}/01run_1:7-12:1"
 )
 
 ###############################################################################

@@ -86,7 +86,7 @@ SKIP_FRAMES=(
 #     animation.webm
 #     animation.mkv
 #
-OUTPUT="animation.mp4"
+OUTPUT="animation_v2.mp4"
 
 # Default frame rate for frames not covered by SLOW_RANGES.
 DEFAULT_FPS=24
